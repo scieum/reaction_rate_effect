@@ -1,0 +1,1556 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Lab:Simulation — 반응 속도에 영향을 주는 요인</title>
+<link rel="stylesheet" as="style" crossorigin
+  href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" />
+<style>
+  :root {
+    --primary-color: #4f46e5;
+    --primary-hover: #4338ca;
+    --bg-color: #f8fafc;
+    --text-main: #334155;
+    --text-sub: #64748b;
+    --text-strong: #0f172a;
+    --border-color: #e2e8f0;
+    --panel-bg: rgba(255,255,255,0.95);
+    --reaction-blue: #0a0e3f;
+    --temp-cold: #06b6d4;
+    --temp-room: #94a3b8;
+    --temp-hot: #f59e0b;
+    --bubble-color: #e0f2fe;
+    --lcd-bg: #0b1220;
+    --lcd-green: #4ade80;
+  }
+
+  /* Pretendard Variable — 굵기는 100~900 자유 사용 */
+  * {
+    font-family: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont,
+      system-ui, Roboto, "Helvetica Neue", "Segoe UI", "Apple SD Gothic Neo",
+      "Noto Sans KR", "Malgun Gothic", sans-serif;
+    font-feature-settings: "ss06";
+    box-sizing: border-box;
+  }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: var(--bg-color);
+    color: var(--text-main);
+    font-weight: 400;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ====== Typography weight scale ====== */
+  h1 { font-weight: 800; letter-spacing: -0.02em; color: var(--text-strong); }
+  h2 { font-weight: 750; letter-spacing: -0.015em; color: var(--text-strong); }
+  h3 { font-weight: 650; letter-spacing: -0.01em; color: var(--text-strong); }
+  h4 { font-weight: 600; color: var(--text-strong); }
+  strong, b { font-weight: 700; }
+  small, .label-xs { font-weight: 500; font-size: 0.72rem; letter-spacing: 0.06em;
+    text-transform: uppercase; color: var(--text-sub); }
+  .num { font-weight: 700; font-variant-numeric: tabular-nums; }
+  .thin { font-weight: 300; }
+
+  /* ====== Layout ====== */
+  .app {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 28px 20px 60px;
+  }
+  header.app-header {
+    margin-bottom: 18px;
+  }
+  header.app-header h1 {
+    margin: 0 0 6px;
+    font-size: clamp(1.5rem, 2.4vw, 2rem);
+  }
+  header.app-header p {
+    margin: 0;
+    color: var(--text-sub);
+    font-weight: 450;
+  }
+
+  /* ====== Tab Bar ====== */
+  .tab-bar {
+    display: flex;
+    gap: 8px;
+    margin: 22px 0 18px;
+    border-bottom: 1px solid var(--border-color);
+  }
+  .tab-btn {
+    appearance: none;
+    background: transparent;
+    border: none;
+    padding: 12px 18px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--text-sub);
+    cursor: pointer;
+    border-bottom: 3px solid transparent;
+    transition: all 0.18s ease;
+  }
+  .tab-btn:hover { color: var(--text-main); }
+  .tab-btn.active {
+    color: var(--primary-color);
+    border-bottom-color: var(--primary-color);
+    font-weight: 700;
+  }
+
+  /* ====== Module grid ====== */
+  .module-grid {
+    display: grid;
+    grid-template-columns: minmax(280px, 360px) 1fr;
+    gap: 22px;
+  }
+  @media (max-width: 860px) {
+    .module-grid { grid-template-columns: 1fr; }
+  }
+
+  .ui-panel, .canvas-container {
+    background: var(--panel-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 14px;
+    padding: 22px;
+    box-shadow: 0 1px 2px rgba(15,23,42,0.04), 0 8px 24px rgba(15,23,42,0.04);
+  }
+  .ui-panel h3, .canvas-container h3 {
+    margin: 0 0 14px;
+    font-size: 1.05rem;
+  }
+  .panel-section { margin-bottom: 18px; }
+  .panel-section:last-child { margin-bottom: 0; }
+
+  /* ====== Controls ====== */
+  input[type="range"] {
+    width: 100%;
+    accent-color: var(--primary-color);
+  }
+  .slider-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 6px;
+  }
+  .slider-row .num { color: var(--primary-color); font-size: 1.1rem; }
+
+  .selection-card-group {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+  }
+  .selection-card {
+    appearance: none;
+    border: 1.5px solid var(--border-color);
+    background: white;
+    border-radius: 10px;
+    padding: 14px 8px;
+    cursor: pointer;
+    font-weight: 600;
+    color: var(--text-main);
+    transition: all 0.18s ease;
+    text-align: center;
+  }
+  .selection-card .ico { font-size: 1.4rem; display: block; margin-bottom: 4px; font-weight: 400; }
+  .selection-card:hover { border-color: var(--primary-color); }
+  .selection-card.active {
+    border-color: var(--primary-color);
+    background: #eef2ff;
+    color: var(--primary-color);
+    font-weight: 700;
+  }
+
+  .toggle-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 14px;
+    background: #f1f5f9;
+    border-radius: 10px;
+  }
+  .toggle-row label { font-weight: 600; }
+  .switch {
+    position: relative;
+    width: 46px;
+    height: 26px;
+    background: #cbd5e1;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .switch::after {
+    content: "";
+    position: absolute;
+    top: 3px; left: 3px;
+    width: 20px; height: 20px;
+    background: white;
+    border-radius: 50%;
+    transition: transform 0.2s;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+  }
+  .switch.on { background: var(--primary-color); }
+  .switch.on::after { transform: translateX(20px); }
+
+  .btn-press {
+    appearance: none;
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    padding: 13px 18px;
+    font-size: 0.98rem;
+    font-weight: 700;
+    cursor: pointer;
+    width: 100%;
+    transition: background 0.18s, transform 0.06s;
+    letter-spacing: -0.01em;
+  }
+  .btn-press:hover { background: var(--primary-hover); }
+  .btn-press:active { transform: translateY(1px); }
+  .btn-press:disabled { background: #cbd5e1; cursor: not-allowed; }
+  .btn-secondary {
+    background: white;
+    color: var(--text-main);
+    border: 1.5px solid var(--border-color);
+  }
+  .btn-secondary:hover { background: #f1f5f9; border-color: var(--text-sub); }
+
+  /* ====== Lab bench ====== */
+  .lab-bench {
+    display: flex;
+    gap: 22px;
+    align-items: flex-end;
+    justify-content: center;
+    min-height: 320px;
+    padding: 16px 8px 8px;
+  }
+
+  /* Beaker SVG container — handled inline */
+
+  /* Stopwatch */
+  .stopwatch {
+    background: var(--lcd-bg);
+    color: var(--lcd-green);
+    border-radius: 12px;
+    padding: 14px 18px;
+    box-shadow: 0 6px 14px rgba(15,23,42,0.18), inset 0 0 0 2px #334155;
+    text-align: center;
+    min-width: 150px;
+  }
+  .stopwatch .label-xs {
+    color: #64748b;
+    font-weight: 600;
+    display: block;
+    margin-bottom: 4px;
+  }
+  .stopwatch .display {
+    font-family: "JetBrains Mono", "Fira Code", "Consolas", monospace;
+    font-size: 1.9rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-shadow: 0 0 8px rgba(74,222,128,0.5);
+    font-variant-numeric: tabular-nums;
+  }
+  .stopwatch.stopped .display { animation: blink 0.4s ease 1; }
+  @keyframes blink {
+    50% { opacity: 0.25; }
+  }
+
+  /* Result area */
+  .result-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-top: 16px;
+  }
+  .result-card {
+    background: #f1f5f9;
+    border-radius: 10px;
+    padding: 12px 14px;
+  }
+  .result-card .label-xs { display: block; }
+  .result-card .num { font-size: 1.3rem; color: var(--text-strong); }
+
+  /* Bar chart */
+  .bar-chart {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-around;
+    height: 140px;
+    gap: 14px;
+    padding: 8px 4px 0;
+    border-bottom: 1.5px solid var(--border-color);
+    margin-top: 14px;
+  }
+  .bar {
+    flex: 1;
+    background: linear-gradient(180deg, #6366f1, #4f46e5);
+    border-radius: 6px 6px 0 0;
+    position: relative;
+    transition: height 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+    min-height: 4px;
+  }
+  .bar .bar-label {
+    position: absolute;
+    top: -20px;
+    left: 0; right: 0;
+    text-align: center;
+    font-weight: 700;
+    font-size: 0.78rem;
+    color: var(--text-strong);
+  }
+  .bar .bar-tag {
+    position: absolute;
+    bottom: -22px;
+    left: 0; right: 0;
+    text-align: center;
+    font-size: 0.72rem;
+    font-weight: 500;
+    color: var(--text-sub);
+  }
+  .bar-chart-wrap { padding-bottom: 26px; }
+
+  /* Review questions */
+  .review {
+    margin-top: 18px;
+    padding-top: 18px;
+    border-top: 1px dashed var(--border-color);
+  }
+  .review h4 {
+    margin: 0 0 10px;
+    font-size: 0.98rem;
+  }
+  .review .question {
+    font-weight: 550;
+    margin-bottom: 10px;
+  }
+  .review-options {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .review-options button {
+    appearance: none;
+    background: white;
+    border: 1.5px solid var(--border-color);
+    border-radius: 8px;
+    padding: 10px 14px;
+    text-align: left;
+    cursor: pointer;
+    font-weight: 500;
+    color: var(--text-main);
+    transition: all 0.15s;
+  }
+  .review-options button:hover { border-color: var(--primary-color); }
+  .review-options button.correct {
+    border-color: #10b981;
+    background: #ecfdf5;
+    color: #047857;
+    font-weight: 700;
+  }
+  .review-options button.wrong {
+    border-color: #ef4444;
+    background: #fef2f2;
+    color: #b91c1c;
+    font-weight: 600;
+  }
+
+  /* Module tab content */
+  .module { display: none; }
+  .module.active { display: block; }
+
+  .fade-in { animation: fadeIn 0.4s ease; }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Footer */
+  footer {
+    margin-top: 36px;
+    padding-top: 18px;
+    border-top: 1px solid var(--border-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.82rem;
+    color: var(--text-sub);
+    font-weight: 450;
+  }
+
+  /* ====== Landing Page ====== */
+  .screen { display: none; }
+  .screen.active { display: block; }
+
+  .landing {
+    min-height: 100vh;
+    padding: 40px 20px 24px;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .landing-inner {
+    max-width: 1080px;
+    width: 100%;
+    margin: auto;
+    position: relative;
+    z-index: 2;
+    padding: 40px 0;
+  }
+  .bg-blob {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(70px);
+    opacity: 0.45;
+    mix-blend-mode: multiply;
+    z-index: 0;
+    animation: blob-float 9s ease-in-out infinite;
+  }
+  .bg-blob.b1 { width: 380px; height: 380px; background: #c4b5fd; top: -120px; left: -120px; }
+  .bg-blob.b2 { width: 320px; height: 320px; background: #93c5fd; top: 40%; right: -100px; animation-delay: 2s; }
+  .bg-blob.b3 { width: 320px; height: 320px; background: #a5b4fc; bottom: -120px; left: 30%; animation-delay: 4s; }
+  @keyframes blob-float {
+    0%, 100% { transform: translate(0,0) scale(1); }
+    33% { transform: translate(20px,-30px) scale(1.08); }
+    66% { transform: translate(-15px,15px) scale(0.94); }
+  }
+
+  .landing-header {
+    text-align: center;
+    margin-bottom: 56px;
+  }
+  .landing-header .eyebrow {
+    display: inline-block;
+    color: var(--primary-color);
+    font-weight: 800;
+    font-size: 0.74rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+  .landing-header h1.brand {
+    font-size: clamp(2.6rem, 6vw, 4rem);
+    font-weight: 900;
+    letter-spacing: -0.035em;
+    line-height: 1.05;
+    margin: 0 0 14px;
+    color: #1e293b;
+  }
+  .landing-header h2.subject {
+    font-size: clamp(1.25rem, 2.6vw, 1.7rem);
+    font-weight: 700;
+    color: #475569;
+    margin: 0 0 18px;
+    letter-spacing: -0.015em;
+  }
+  .landing-header p.lead {
+    color: var(--text-sub);
+    font-weight: 450;
+    font-size: 1rem;
+    margin: 0;
+    line-height: 1.7;
+  }
+
+  .lab-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 22px;
+  }
+  @media (max-width: 920px) { .lab-grid { grid-template-columns: 1fr; } }
+
+  .menu-card {
+    appearance: none;
+    background: rgba(255,255,255,0.82);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid #e2e8f0;
+    border-radius: 24px;
+    padding: 28px 26px;
+    text-align: left;
+    cursor: pointer;
+    height: 260px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    box-shadow: 0 1px 2px rgba(15,23,42,0.04);
+  }
+  .menu-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 14px 30px -10px rgba(15,23,42,0.18);
+  }
+  .menu-card:active { transform: scale(0.985); }
+  .menu-card .glow {
+    position: absolute;
+    top: -40%; right: -40%;
+    width: 280px; height: 280px;
+    border-radius: 50%;
+    filter: blur(50px);
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .menu-card:hover .glow { opacity: 1; }
+  .menu-card.lab1 .glow { background: linear-gradient(135deg, #dbeafe, #e0e7ff); }
+  .menu-card.lab2 .glow { background: linear-gradient(135deg, #fed7aa, #fee2e2); }
+  .menu-card.lab3 .glow { background: linear-gradient(135deg, #d1fae5, #ccfbf1); }
+
+  .menu-card .badge {
+    display: inline-block;
+    padding: 5px 12px;
+    background: rgba(255,255,255,0.6);
+    border: 1px solid #e2e8f0;
+    border-radius: 999px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: #64748b;
+    letter-spacing: 0.04em;
+    margin-bottom: 14px;
+    position: relative;
+    z-index: 1;
+  }
+  .menu-card h3.card-title {
+    font-size: 1.35rem;
+    font-weight: 800;
+    color: #1e293b;
+    margin: 0 0 8px;
+    letter-spacing: -0.02em;
+    position: relative;
+    z-index: 1;
+    transition: color 0.25s;
+  }
+  .menu-card.lab1:hover h3.card-title { color: #2563eb; }
+  .menu-card.lab2:hover h3.card-title { color: #ea580c; }
+  .menu-card.lab3:hover h3.card-title { color: #059669; }
+  .menu-card p.card-desc {
+    color: var(--text-sub);
+    font-size: 0.88rem;
+    font-weight: 450;
+    line-height: 1.6;
+    margin: 0;
+    position: relative;
+    z-index: 1;
+  }
+  .menu-card .cta {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: #94a3b8;
+    font-weight: 700;
+    font-size: 0.85rem;
+    position: relative;
+    z-index: 1;
+    transition: color 0.25s;
+  }
+  .menu-card.lab1:hover .cta { color: #2563eb; }
+  .menu-card.lab2:hover .cta { color: #ea580c; }
+  .menu-card.lab3:hover .cta { color: #059669; }
+  .menu-card .cta svg { transition: transform 0.25s; }
+  .menu-card:hover .cta svg { transform: translateX(4px); }
+
+  .landing-footer {
+    text-align: center;
+    color: #94a3b8;
+    font-size: 0.78rem;
+    font-weight: 500;
+    margin-top: 40px;
+    position: relative;
+    z-index: 2;
+  }
+
+  /* Back button in lab views */
+  .back-btn {
+    appearance: none;
+    background: white;
+    border: 1px solid var(--border-color);
+    border-radius: 999px;
+    padding: 9px 16px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--text-sub);
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 18px;
+    transition: all 0.18s;
+  }
+  .back-btn:hover { color: var(--text-strong); border-color: var(--text-sub); }
+
+  .lab-header {
+    margin-bottom: 14px;
+  }
+  .lab-header .lab-tag {
+    display: inline-block;
+    font-size: 0.7rem;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--primary-color);
+    margin-bottom: 6px;
+  }
+  .lab-header h2 {
+    margin: 0;
+    font-size: clamp(1.4rem, 2.4vw, 1.8rem);
+  }
+</style>
+</head>
+<body>
+
+<!-- ==================== LANDING PAGE ==================== -->
+<div class="screen active" id="screen-home">
+  <div class="landing">
+    <div class="bg-blob b1"></div>
+    <div class="bg-blob b2"></div>
+    <div class="bg-blob b3"></div>
+
+    <div class="landing-inner">
+      <div class="landing-header">
+        <span class="eyebrow">Virtual Science Lab</span>
+        <h1 class="brand">Lab:Simulation</h1>
+        <h2 class="subject">반응 속도에 영향을 주는 요인</h2>
+        <p class="lead">가상 실험실에 오신 것을 환영합니다.<br>탐구하고 싶은 실험 주제를 선택하세요.</p>
+      </div>
+
+      <div class="lab-grid">
+        <button class="menu-card lab1" onclick="navigateTo('lab1')">
+          <div class="glow"></div>
+          <div>
+            <span class="badge">Chemistry</span>
+            <h3 class="card-title">Lab 1. 농도와 반응 속도</h3>
+            <p class="card-desc">KIO₃ 농도를 조절하며 아이오딘 시계 반응의 속도 변화를 관찰합니다.</p>
+          </div>
+          <div class="cta">
+            <span>실험 시작하기</span>
+            <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+          </div>
+        </button>
+
+        <button class="menu-card lab2" onclick="navigateTo('lab2')">
+          <div class="glow"></div>
+          <div>
+            <span class="badge">Chemistry</span>
+            <h3 class="card-title">Lab 2. 온도와 반응 속도</h3>
+            <p class="card-desc">얼음물 · 실온 · 뜨거운 물에서 동일 반응의 속도가 어떻게 달라지는지 비교합니다.</p>
+          </div>
+          <div class="cta">
+            <span>실험 시작하기</span>
+            <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+          </div>
+        </button>
+
+        <button class="menu-card lab3" onclick="navigateTo('lab3')">
+          <div class="glow"></div>
+          <div>
+            <span class="badge">Chemistry</span>
+            <h3 class="card-title">Lab 3. 촉매와 반응 속도</h3>
+            <p class="card-desc">과산화 수소 분해에 KI 촉매를 더해 거품 발생 속도의 차이를 관찰합니다.</p>
+          </div>
+          <div class="cta">
+            <span>실험 시작하기</span>
+            <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+          </div>
+        </button>
+      </div>
+    </div>
+
+    <footer class="landing-footer">
+      © 2026 사이음(sci_eum). 과학의 사이, 사람을 잇다.
+    </footer>
+  </div>
+</div>
+
+<!-- ==================== LAB 1 ==================== -->
+<div class="screen" id="screen-lab1">
+<div class="app">
+  <button class="back-btn" onclick="navigateTo('home')">
+    <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/></svg>
+    홈으로
+  </button>
+  <header class="lab-header">
+    <span class="lab-tag">Lab 1</span>
+    <h2>농도와 반응 속도</h2>
+  </header>
+
+  <section class="module active" id="m1">
+    <div class="module-grid">
+      <div class="ui-panel">
+        <h3>실험 안내</h3>
+        <div class="panel-section">
+          <p style="margin:0 0 8px; font-weight:500; color:var(--text-main); font-size:0.9rem; line-height:1.6;">
+            농도가 다른 KIO₃ 수용액 4개에 <strong>NaHSO₃ + 녹말 수용액</strong>을 같은 부피로 동시에 부어 반응 시점을 비교합니다.
+          </p>
+          <small class="thin">총 50 mL 비커 스케일 · KIO₃ 원액 0.05 M</small>
+        </div>
+
+        <div class="panel-section">
+          <span class="label-xs">희석 문제</span>
+          <p style="margin:6px 0 10px; font-size:0.83rem; color:var(--text-sub); font-weight:500; line-height:1.55;">
+            각 비커가 목표 농도가 되도록 <strong>KIO₃ 원액(0.05 M)</strong>과 <strong>증류수</strong>를 몇 mL씩 넣어야 할지 입력하세요. (총 50 mL)
+          </p>
+          <div id="m1-quiz" style="display:flex; flex-direction:column; gap:8px;"></div>
+          <button class="btn-press btn-secondary" id="m1-check" style="margin-top:10px;">정답 확인</button>
+          <div id="m1-quiz-msg" style="margin-top:8px; font-size:0.82rem; font-weight:600; min-height:18px;"></div>
+        </div>
+
+        <div class="panel-section">
+          <button class="btn-press" id="m1-start" disabled>4개 비커 동시 시작</button>
+        </div>
+        <div class="panel-section">
+          <button class="btn-press btn-secondary" id="m1-reset">초기화</button>
+        </div>
+      </div>
+
+      <div class="canvas-container">
+        <!-- ===== 실험 뷰 ===== -->
+        <div id="m1-main-view">
+          <h3>실험대</h3>
+          <div class="lab-bench" id="m1-bench" style="flex-wrap:wrap; gap:14px;">
+            <div id="m1-beakers" style="display:flex; gap:12px; align-items:flex-end; flex-wrap:wrap; justify-content:center;"></div>
+            <div class="stopwatch" id="m1-stopwatch">
+              <span class="label-xs">STOPWATCH</span>
+              <div class="display" id="m1-time">00:00.0</div>
+            </div>
+          </div>
+
+          <div class="bar-chart-wrap">
+            <small class="label-xs">농도별 반응 시간</small>
+            <div class="bar-chart" id="m1-chart"></div>
+          </div>
+
+          <div id="m1-next-wrap" style="display:none; margin-top:20px; text-align:right;" class="fade-in">
+            <button class="btn-press" id="m1-next" style="width:auto; padding:12px 24px;">
+              다음 — 분자 충돌 분석 →
+            </button>
+          </div>
+        </div>
+
+        <!-- ===== 분석 뷰 ===== -->
+        <div id="m1-analysis-view" style="display:none;" class="fade-in">
+          <button class="back-btn" id="m1-back-to-lab">
+            <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/></svg>
+            실험으로 돌아가기
+          </button>
+          <h3>분자 충돌 시뮬레이션</h3>
+          <p style="margin:6px 0 14px; color:var(--text-sub); font-size:0.88rem; font-weight:500; line-height:1.6;">
+            농도가 높을수록 단위 부피당 분자 수가 많아져 <strong>충돌 횟수</strong>가 증가합니다.
+            아래 4개 상자에서 같은 시간 동안 일어나는 유효 충돌 수를 비교해 보세요.
+          </p>
+          <div id="m1-collision-boxes" style="display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin-top:12px;"></div>
+
+          <div class="review" style="margin-top:24px;">
+            <h4>정리 질문</h4>
+            <p class="question">KIO₃ 농도가 높아질수록 반응 시간은 어떻게 변할까요?</p>
+            <div class="review-options" data-correct="0">
+              <button>① 짧아진다 (반응이 빨라진다)</button>
+              <button>② 길어진다 (반응이 느려진다)</button>
+              <button>③ 변하지 않는다</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  </section>
+</div>
+</div>
+
+<!-- ==================== LAB 2 ==================== -->
+<div class="screen" id="screen-lab2">
+<div class="app">
+  <button class="back-btn" onclick="navigateTo('home')">
+    <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/></svg>
+    홈으로
+  </button>
+  <header class="lab-header">
+    <span class="lab-tag">Lab 2</span>
+    <h2>온도와 반응 속도</h2>
+  </header>
+
+  <section class="module active" id="m2">
+    <div class="module-grid">
+      <div class="ui-panel">
+        <h3>실험 변수</h3>
+        <div class="panel-section">
+          <span class="label-xs">온도 조건</span>
+          <div class="selection-card-group" id="m2-temp" style="margin-top:8px;">
+            <button class="selection-card" data-temp="ice"><span class="ico">❄</span>얼음물<br><small class="thin">0 ℃</small></button>
+            <button class="selection-card active" data-temp="room"><span class="ico">○</span>실온<br><small class="thin">25 ℃</small></button>
+            <button class="selection-card" data-temp="hot"><span class="ico">♨</span>뜨거운물<br><small class="thin">60 ℃</small></button>
+          </div>
+        </div>
+        <div class="panel-section">
+          <button class="btn-press" id="m2-start">혼합 시작</button>
+        </div>
+        <div class="panel-section">
+          <button class="btn-press btn-secondary" id="m2-reset">초기화</button>
+        </div>
+      </div>
+
+      <div class="canvas-container">
+        <h3>실험대</h3>
+        <div class="lab-bench">
+          <svg viewBox="0 0 220 220" width="230" height="230" aria-label="수조와 비커">
+            <!-- Water bath -->
+            <rect id="m2-bath" x="10" y="60" width="200" height="150" rx="8"
+                  fill="#e2e8f0" stroke="#475569" stroke-width="2.5"
+                  style="transition: fill 0.6s ease;"/>
+            <!-- Beaker inside -->
+            <path d="M70 80 L70 195 Q70 205 80 205 L140 205 Q150 205 150 195 L150 80"
+                  fill="none" stroke="#1e293b" stroke-width="2.5" stroke-linecap="round"/>
+            <path d="M64 80 L156 80" stroke="#1e293b" stroke-width="2.5"/>
+            <rect id="m2-liquid" x="72" y="100" width="76" height="103" rx="2"
+                  fill="#e0f2fe" style="transition: fill 3s ease;"/>
+            <text x="110" y="74" text-anchor="middle" font-size="10" font-weight="700" fill="#1e293b">100 mL</text>
+            <text x="110" y="40" text-anchor="middle" font-size="11" font-weight="700" id="m2-bath-label" fill="#475569">실온 수조 25 ℃</text>
+          </svg>
+
+          <div class="stopwatch" id="m2-stopwatch">
+            <span class="label-xs">STOPWATCH</span>
+            <div class="display" id="m2-time">00:00.0</div>
+          </div>
+        </div>
+
+        <div class="result-row">
+          <div class="result-card">
+            <span class="label-xs">반응 시간</span>
+            <span class="num" id="m2-result">—</span>
+          </div>
+          <div class="result-card">
+            <span class="label-xs">상대 속도</span>
+            <span class="num" id="m2-rate">—</span>
+          </div>
+        </div>
+
+        <div class="bar-chart-wrap">
+          <small class="label-xs">조건별 반응 시간 비교</small>
+          <div class="bar-chart" id="m2-chart"></div>
+        </div>
+
+        <div class="review">
+          <h4>정리 질문</h4>
+          <p class="question">온도와 반응 속도의 관계로 가장 알맞은 것은?</p>
+          <div class="review-options" data-correct="1">
+            <button>① 온도가 높을수록 반응이 느려진다</button>
+            <button>② 온도가 높을수록 반응이 빨라진다</button>
+            <button>③ 온도와 반응 속도는 관계없다</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  </section>
+</div>
+</div>
+
+<!-- ==================== LAB 3 ==================== -->
+<div class="screen" id="screen-lab3">
+<div class="app">
+  <button class="back-btn" onclick="navigateTo('home')">
+    <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/></svg>
+    홈으로
+  </button>
+  <header class="lab-header">
+    <span class="lab-tag">Lab 3</span>
+    <h2>촉매와 반응 속도</h2>
+  </header>
+
+  <section class="module active" id="m3">
+    <div class="module-grid">
+      <div class="ui-panel">
+        <h3>실험 변수</h3>
+        <div class="panel-section">
+          <div class="toggle-row">
+            <label>비커 B에 KI 촉매 추가</label>
+            <div class="switch" id="m3-switch"></div>
+          </div>
+          <small class="thin">A: 촉매 없음 · B: KI 추가</small>
+        </div>
+        <div class="panel-section">
+          <button class="btn-press" id="m3-start">반응 시작</button>
+        </div>
+        <div class="panel-section">
+          <button class="btn-press btn-secondary" id="m3-reset">초기화</button>
+        </div>
+      </div>
+
+      <div class="canvas-container">
+        <h3>실험대 — H₂O₂ 분해</h3>
+        <div class="lab-bench">
+          <!-- Beaker A -->
+          <svg viewBox="0 0 110 220" width="120" height="230">
+            <path d="M20 30 L20 195 Q20 208 33 208 L87 208 Q100 208 100 195 L100 30"
+                  fill="none" stroke="#475569" stroke-width="2.5"/>
+            <path d="M14 30 L106 30" stroke="#475569" stroke-width="2.5"/>
+            <rect id="m3-liquidA" x="22" y="120" width="76" height="86" fill="#fce7f3"/>
+            <g id="m3-bubblesA"></g>
+            <text x="60" y="22" text-anchor="middle" font-size="11" font-weight="700" fill="#475569">A · 촉매 없음</text>
+          </svg>
+
+          <!-- Beaker B -->
+          <svg viewBox="0 0 110 220" width="120" height="230">
+            <path d="M20 30 L20 195 Q20 208 33 208 L87 208 Q100 208 100 195 L100 30"
+                  fill="none" stroke="#475569" stroke-width="2.5"/>
+            <path d="M14 30 L106 30" stroke="#475569" stroke-width="2.5"/>
+            <rect id="m3-liquidB" x="22" y="120" width="76" height="86" fill="#fce7f3"/>
+            <g id="m3-bubblesB"></g>
+            <text x="60" y="22" text-anchor="middle" font-size="11" font-weight="700" fill="#475569">B · KI 첨가</text>
+          </svg>
+
+          <div class="stopwatch" id="m3-stopwatch">
+            <span class="label-xs">STOPWATCH</span>
+            <div class="display" id="m3-time">00:00.0</div>
+          </div>
+        </div>
+
+        <div class="result-row">
+          <div class="result-card">
+            <span class="label-xs">A 거품량 (상대)</span>
+            <span class="num" id="m3-resultA">—</span>
+          </div>
+          <div class="result-card">
+            <span class="label-xs">B 거품량 (상대)</span>
+            <span class="num" id="m3-resultB">—</span>
+          </div>
+        </div>
+
+        <div class="review">
+          <h4>정리 질문</h4>
+          <p class="question">KI가 H₂O₂ 분해 반응에 미치는 역할로 옳은 것은?</p>
+          <div class="review-options" data-correct="0">
+            <button>① 반응 속도를 빠르게 하는 촉매로 작용한다</button>
+            <button>② 반응에 직접 참여하여 소모된다</button>
+            <button>③ 반응을 억제하여 거품 발생을 막는다</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+</div>
+
+<script>
+/* ============ Screen navigation ============ */
+function navigateTo(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  const target = id === 'home' ? 'screen-home' : 'screen-' + id;
+  document.getElementById(target).classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'instant' });
+}
+
+/* ============ Stopwatch helper ============ */
+function fmtTime(sec) {
+  const m = Math.floor(sec / 60);
+  const s = sec % 60;
+  return String(m).padStart(2, '0') + ':' + s.toFixed(1).padStart(4, '0');
+}
+function makeStopwatch(displayEl, swEl) {
+  let start = 0, raf = 0, running = false;
+  return {
+    start() {
+      running = true;
+      swEl.classList.remove('stopped');
+      start = performance.now();
+      const tick = () => {
+        if (!running) return;
+        const t = (performance.now() - start) / 1000;
+        displayEl.textContent = fmtTime(t);
+        raf = requestAnimationFrame(tick);
+      };
+      tick();
+    },
+    stop(finalSec) {
+      running = false;
+      cancelAnimationFrame(raf);
+      if (finalSec != null) displayEl.textContent = fmtTime(finalSec);
+      swEl.classList.add('stopped');
+    },
+    reset() {
+      running = false;
+      cancelAnimationFrame(raf);
+      displayEl.textContent = '00:00.0';
+      swEl.classList.remove('stopped');
+    }
+  };
+}
+
+/* ============ Lab 1 농도 — 4개 비커 동시 ============ */
+// 실제 실험 시간 (초). 비율을 유지하면서 가장 느린 비커가 ~28초에 끝나도록 설정 — 가속 없음.
+// KIO₃ 원액 0.05 M 기준 · 총부피 50 mL (KIO₃ + 증류수)
+// 반응 시간은 농도에 반비례 (t ∝ 1/c)
+const M1_DATA = [
+  { idx: 1, conc: 0.020, time: 28, kio3: 20, water: 30 },
+  { idx: 2, conc: 0.030, time: 19, kio3: 30, water: 20 },
+  { idx: 3, conc: 0.040, time: 14, kio3: 40, water: 10 },
+  { idx: 4, conc: 0.050, time: 11, kio3: 50, water: 0  },
+];
+const m1Sw = makeStopwatch(document.getElementById('m1-time'), document.getElementById('m1-stopwatch'));
+const m1Results = {};
+let m1Timers = [];
+
+function buildM1Beakers() {
+  const wrap = document.getElementById('m1-beakers');
+  wrap.innerHTML = '';
+  M1_DATA.forEach(d => {
+    const col = document.createElement('div');
+    col.style.cssText = 'display:flex; flex-direction:column; align-items:center; gap:4px;';
+    col.innerHTML = `
+      <svg viewBox="0 0 140 230" width="120" height="195">
+        <!-- ===== 붓는 비커 (50 mL 그리핀 비커, 기울어진 상태) ===== -->
+        <g id="m1-pour-src-${d.idx}" opacity="0" style="transition: opacity 0.5s ease;">
+          <g transform="translate(38 -8) rotate(-65 60 25)">
+            <!-- 주둥이 -->
+            <path d="M40 8 Q34 4 32 10" fill="none" stroke="#475569"
+                  stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+            <!-- 본체 -->
+            <path d="M40 8 L40 38 Q40 42 44 42 L78 42 Q82 42 82 38 L82 8"
+                  fill="white" stroke="#475569" stroke-width="1.4"
+                  stroke-linejoin="round" stroke-linecap="round"/>
+            <!-- 상단 림 -->
+            <line x1="40" y1="8" x2="82" y2="8" stroke="#475569" stroke-width="1.4"/>
+            <!-- 내부 액체 (NaHSO₃ + 녹말 — 옅은 투명색) -->
+            <rect x="41.4" y="22" width="40.2" height="19.6" fill="rgba(125,211,252,0.5)"/>
+            <!-- 눈금 -->
+            <g stroke="#94a3b8" stroke-width="0.6" font-size="4" fill="#94a3b8" font-weight="600">
+              <line x1="78" y1="20" x2="82" y2="20"/>
+              <line x1="78" y1="28" x2="82" y2="28"/>
+              <line x1="78" y1="36" x2="82" y2="36"/>
+            </g>
+            <!-- 라벨 -->
+            <text x="61" y="34" text-anchor="middle" font-size="5" font-weight="700" fill="#475569">50 mL</text>
+          </g>
+        </g>
+        <!-- ===== 떨어지는 액체 줄기 ===== -->
+        <rect id="m1-stream-${d.idx}" x="73" y="36" width="3" height="0"
+              fill="rgba(125,211,252,0.75)" opacity="0"/>
+
+        <!-- ===== 메인 비커 (그리핀 비커 형태) ===== -->
+        <!-- 주둥이(spout) -->
+        <path d="M22 70 Q16 64 14 70" fill="none" stroke="#475569" stroke-width="2.4"
+              stroke-linecap="round" stroke-linejoin="round"/>
+        <!-- 본체 -->
+        <path d="M22 70 L22 208 Q22 216 30 216 L100 216 Q108 216 108 208 L108 70"
+              fill="none" stroke="#475569" stroke-width="2.4" stroke-linejoin="round"
+              stroke-linecap="round"/>
+        <!-- 상단 림 -->
+        <line x1="22" y1="70" x2="108" y2="70" stroke="#475569" stroke-width="2.4"/>
+        <!-- 액체 -->
+        <rect id="m1-liquid-${d.idx}" x="24.5" y="115" width="83" height="99"
+              fill="#e0f2fe" style="transition: y 1.2s ease, height 1.2s ease;"/>
+        <!-- 눈금 -->
+        <g stroke="#94a3b8" stroke-width="1" font-size="7" fill="#94a3b8" font-weight="600">
+          <line x1="24.5" y1="115" x2="34" y2="115"/> <text x="37" y="118">80</text>
+          <line x1="24.5" y1="140" x2="34" y2="140"/> <text x="37" y="143">60</text>
+          <line x1="24.5" y1="165" x2="34" y2="165"/> <text x="37" y="168">40</text>
+          <line x1="24.5" y1="190" x2="34" y2="190"/> <text x="37" y="193">20</text>
+        </g>
+        <text x="65" y="64" text-anchor="middle" font-size="9" font-weight="700" fill="#475569">비커 ${d.idx}</text>
+      </svg>
+      <div style="font-weight:700; color:#0f172a; font-size:0.78rem; font-variant-numeric:tabular-nums;">${d.conc.toFixed(3)} M</div>
+      <div style="font-weight:500; color:#94a3b8; font-size:0.7rem;">KIO₃ ${d.kio3} + H₂O ${d.water} mL</div>
+      <div id="m1-time-${d.idx}" style="font-weight:600; font-size:0.78rem; color:#94a3b8; font-variant-numeric:tabular-nums;">— 초</div>
+    `;
+    wrap.appendChild(col);
+  });
+}
+buildM1Beakers();
+
+/* ----- 희석 문제 ----- */
+function buildM1Quiz() {
+  const wrap = document.getElementById('m1-quiz');
+  wrap.innerHTML = '';
+  M1_DATA.forEach(d => {
+    const row = document.createElement('div');
+    row.id = 'm1-quiz-row-' + d.idx;
+    row.style.cssText = 'display:flex; align-items:center; gap:6px; padding:8px 10px; background:#f8fafc; border:1.5px solid var(--border-color); border-radius:8px; transition: all 0.2s;';
+    row.innerHTML = `
+      <div style="font-weight:700; font-size:0.78rem; color:#0f172a; min-width:78px;">
+        비커 ${d.idx}<br>
+        <span style="font-weight:600; color:var(--text-sub); font-size:0.72rem;">${d.conc.toFixed(3)} M</span>
+      </div>
+      <div style="display:flex; align-items:center; gap:4px; font-size:0.75rem; color:var(--text-sub); font-weight:600;">
+        KIO₃
+        <input type="number" min="0" max="50" data-idx="${d.idx}" data-kind="kio3"
+               style="width:42px; padding:4px 6px; border:1.5px solid var(--border-color); border-radius:6px; font-family:inherit; font-weight:700; text-align:center; font-size:0.8rem;">
+        mL +
+        H₂O
+        <input type="number" min="0" max="50" data-idx="${d.idx}" data-kind="water"
+               style="width:42px; padding:4px 6px; border:1.5px solid var(--border-color); border-radius:6px; font-family:inherit; font-weight:700; text-align:center; font-size:0.8rem;">
+        mL
+      </div>
+    `;
+    wrap.appendChild(row);
+  });
+}
+buildM1Quiz();
+
+let m1QuizPassed = false;
+function m1SetStartEnabled(on) {
+  const btn = document.getElementById('m1-start');
+  btn.disabled = !on;
+}
+
+document.getElementById('m1-check').addEventListener('click', () => {
+  const msg = document.getElementById('m1-quiz-msg');
+  let allCorrect = true;
+  let anyEmpty = false;
+  M1_DATA.forEach(d => {
+    const row = document.getElementById('m1-quiz-row-' + d.idx);
+    const k = row.querySelector('[data-kind="kio3"]').value;
+    const w = row.querySelector('[data-kind="water"]').value;
+    if (k === '' || w === '') anyEmpty = true;
+    const ok = parseInt(k) === d.kio3 && parseInt(w) === d.water;
+    if (ok) {
+      row.style.background = '#ecfdf5';
+      row.style.borderColor = '#10b981';
+    } else {
+      row.style.background = '#fef2f2';
+      row.style.borderColor = '#ef4444';
+      allCorrect = false;
+    }
+  });
+  if (anyEmpty) {
+    msg.textContent = '모든 칸을 입력해 주세요.';
+    msg.style.color = '#b91c1c';
+    return;
+  }
+  if (allCorrect) {
+    msg.textContent = '✓ 정답! 용액이 올바르게 준비되었습니다.';
+    msg.style.color = '#047857';
+    m1QuizPassed = true;
+    m1SetStartEnabled(true);
+    // 입력 잠금
+    document.querySelectorAll('#m1-quiz input').forEach(i => i.disabled = true);
+    document.getElementById('m1-check').disabled = true;
+  } else {
+    msg.textContent = '✗ 틀린 비커가 있습니다. 다시 계산해 보세요. (총 50 mL · C₁V₁ = C₂V₂)';
+    msg.style.color = '#b91c1c';
+    m1QuizPassed = false;
+    m1SetStartEnabled(false);
+  }
+});
+
+function m1ResetQuiz() {
+  m1QuizPassed = false;
+  m1SetStartEnabled(false);
+  document.getElementById('m1-quiz-msg').textContent = '';
+  document.getElementById('m1-check').disabled = false;
+  M1_DATA.forEach(d => {
+    const row = document.getElementById('m1-quiz-row-' + d.idx);
+    row.style.background = '#f8fafc';
+    row.style.borderColor = 'var(--border-color)';
+    row.querySelectorAll('input').forEach(i => { i.disabled = false; i.value = ''; });
+  });
+}
+
+function m1ResetAll() {
+  m1Timers.forEach(t => clearTimeout(t));
+  m1Timers = [];
+  M1_DATA.forEach(d => {
+    const liq = document.getElementById('m1-liquid-' + d.idx);
+    liq.style.transition = 'none';
+    liq.setAttribute('fill', '#e0f2fe');
+    liq.setAttribute('y', '115');
+    liq.setAttribute('height', '99');
+    const src = document.getElementById('m1-pour-src-' + d.idx);
+    src.style.transition = 'none';
+    src.setAttribute('opacity', '0');
+    const stream = document.getElementById('m1-stream-' + d.idx);
+    stream.style.transition = 'none';
+    stream.setAttribute('opacity', '0');
+    stream.setAttribute('height', '0');
+    document.getElementById('m1-time-' + d.idx).textContent = '— 초';
+    document.getElementById('m1-time-' + d.idx).style.color = '#94a3b8';
+  });
+  m1Sw.reset();
+}
+
+const POUR_MS = 1600; // NaHSO₃+녹말 수용액 붓기 시간
+
+document.getElementById('m1-start').addEventListener('click', () => {
+  m1ResetAll();
+
+  // Phase 1 — 모든 비커에 NaHSO₃+녹말 동시에 붓기
+  M1_DATA.forEach(d => {
+    const src = document.getElementById('m1-pour-src-' + d.idx);
+    const stream = document.getElementById('m1-stream-' + d.idx);
+    const liq = document.getElementById('m1-liquid-' + d.idx);
+
+    // 붓는 비커 등장 (페이드 인)
+    m1Timers.push(setTimeout(() => {
+      src.style.transition = 'opacity 0.35s ease';
+      src.setAttribute('opacity', '1');
+    }, 30));
+    // 줄기 흐르기 시작
+    m1Timers.push(setTimeout(() => {
+      stream.setAttribute('opacity', '1');
+      stream.style.transition = `height ${(POUR_MS - 600) / 1000}s linear`;
+      stream.setAttribute('height', '79');
+    }, 350));
+    // 액체 수위 상승 (115→100 위로 15, 99→114)
+    m1Timers.push(setTimeout(() => {
+      liq.style.transition = 'y 1.1s ease, height 1.1s ease';
+      liq.setAttribute('y', '100');
+      liq.setAttribute('height', '114');
+    }, 450));
+    // 붓기 종료 — 줄기 정지, 붓는 비커 페이드 아웃
+    m1Timers.push(setTimeout(() => {
+      stream.style.transition = 'opacity 0.3s ease';
+      stream.setAttribute('opacity', '0');
+      stream.setAttribute('height', '0');
+      src.style.transition = 'opacity 0.5s ease';
+      src.setAttribute('opacity', '0');
+    }, POUR_MS));
+  });
+
+  // Phase 2 — 혼합 완료 시점부터 스톱워치 시작 + 반응 시작
+  m1Timers.push(setTimeout(() => {
+    m1Sw.start();
+    M1_DATA.forEach(d => {
+      const liq = document.getElementById('m1-liquid-' + d.idx);
+      const tLabel = document.getElementById('m1-time-' + d.idx);
+      const realMs = d.time * 1000;
+      // 반응 완료 직전(0.4초 전)에 빠르게 청람색으로 변함 — 아이오딘 시계 반응의 갑작스러운 색 변화
+      m1Timers.push(setTimeout(() => {
+        liq.style.transition = 'fill 0.4s ease';
+        liq.setAttribute('fill', '#0a0e3f');
+      }, Math.max(0, realMs - 400)));
+      // 반응 완료 — 시간 기록
+      m1Timers.push(setTimeout(() => {
+        tLabel.textContent = d.time.toFixed(1) + ' 초';
+        tLabel.style.color = '#0a0e3f';
+        m1Results[d.conc] = d.time;
+        renderM1Chart();
+      }, realMs));
+    });
+    // 가장 느린 비커가 끝나면 스톱워치 정지 + 다음 버튼 노출
+    const slowest = Math.max(...M1_DATA.map(d => d.time));
+    m1Timers.push(setTimeout(() => {
+      m1Sw.stop(slowest);
+      document.getElementById('m1-next-wrap').style.display = 'block';
+    }, slowest * 1000 + 100));
+  }, POUR_MS + 200));
+});
+
+/* ----- 뷰 전환 + 충돌 시뮬레이션 ----- */
+document.getElementById('m1-next').addEventListener('click', () => {
+  document.getElementById('m1-main-view').style.display = 'none';
+  document.getElementById('m1-analysis-view').style.display = 'block';
+  startCollisionSim();
+});
+document.getElementById('m1-back-to-lab').addEventListener('click', () => {
+  stopCollisionSim();
+  document.getElementById('m1-analysis-view').style.display = 'none';
+  document.getElementById('m1-main-view').style.display = 'block';
+});
+
+// 농도별 분자 수 (KIO₃ + NaHSO₃ 반응종 한 쌍)
+const M1_PARTICLES = [
+  { idx: 1, conc: 0.020, yellow: 1, purple: 1 },
+  { idx: 2, conc: 0.030, yellow: 1, purple: 2 },
+  { idx: 3, conc: 0.040, yellow: 2, purple: 2 },
+  { idx: 4, conc: 0.050, yellow: 2, purple: 3 },
+];
+const COLLISION_W = 150, COLLISION_H = 150;
+let collisionAnimId = null;
+let collisionState = [];
+
+function buildCollisionBoxes() {
+  const wrap = document.getElementById('m1-collision-boxes');
+  wrap.innerHTML = '';
+  collisionState = [];
+  M1_PARTICLES.forEach(d => {
+    const box = document.createElement('div');
+    box.style.cssText = 'background:#f1f5f9; border:1.5px solid var(--border-color); border-radius:12px; padding:10px; display:flex; flex-direction:column; align-items:center; gap:6px;';
+    box.innerHTML = `
+      <div style="font-weight:700; font-size:0.78rem; color:#0f172a;">비커 ${d.idx} · ${d.conc.toFixed(3)} M</div>
+      <svg id="m1-coll-svg-${d.idx}" viewBox="0 0 ${COLLISION_W} ${COLLISION_H}" width="100%" style="background:linear-gradient(180deg,#e0f2fe,#f0f9ff); border-radius:8px; max-width:160px;"></svg>
+      <div style="font-weight:600; font-size:0.74rem; color:var(--text-sub);">
+        충돌 횟수 <span id="m1-coll-count-${d.idx}" style="font-weight:800; color:#4f46e5; font-variant-numeric:tabular-nums;">0</span>
+      </div>
+    `;
+    wrap.appendChild(box);
+
+    // 입자 초기화
+    const particles = [];
+    const total = d.yellow + d.purple;
+    for (let i = 0; i < d.yellow; i++) particles.push(makeParticle('yellow'));
+    for (let i = 0; i < d.purple; i++) particles.push(makeParticle('purple'));
+    collisionState.push({ idx: d.idx, particles, count: 0, lastHit: new Map() });
+  });
+}
+
+function makeParticle(type) {
+  const angle = Math.random() * Math.PI * 2;
+  const speed = 0.7 + Math.random() * 0.4;
+  return {
+    type,
+    x: 20 + Math.random() * (COLLISION_W - 40),
+    y: 20 + Math.random() * (COLLISION_H - 40),
+    vx: Math.cos(angle) * speed,
+    vy: Math.sin(angle) * speed,
+    r: 9,
+  };
+}
+
+function renderCollisionBox(state) {
+  const svg = document.getElementById('m1-coll-svg-' + state.idx);
+  let html = '';
+  state.particles.forEach(p => {
+    const fill = p.type === 'yellow'
+      ? 'url(#m1-grad-y-' + state.idx + ')'
+      : 'url(#m1-grad-p-' + state.idx + ')';
+    html += `<circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="${p.r}" fill="${fill}" stroke="#1e293b" stroke-width="0.8"/>`;
+  });
+  svg.innerHTML = `
+    <defs>
+      <radialGradient id="m1-grad-y-${state.idx}" cx="35%" cy="35%">
+        <stop offset="0%" stop-color="#fef9c3"/>
+        <stop offset="60%" stop-color="#facc15"/>
+        <stop offset="100%" stop-color="#a16207"/>
+      </radialGradient>
+      <radialGradient id="m1-grad-p-${state.idx}" cx="35%" cy="35%">
+        <stop offset="0%" stop-color="#e9d5ff"/>
+        <stop offset="60%" stop-color="#a855f7"/>
+        <stop offset="100%" stop-color="#581c87"/>
+      </radialGradient>
+    </defs>
+    ${html}
+  `;
+}
+
+function tickCollision() {
+  collisionState.forEach(state => {
+    // 이동 + 벽 반사
+    state.particles.forEach(p => {
+      p.x += p.vx;
+      p.y += p.vy;
+      if (p.x < p.r) { p.x = p.r; p.vx = -p.vx; }
+      if (p.x > COLLISION_W - p.r) { p.x = COLLISION_W - p.r; p.vx = -p.vx; }
+      if (p.y < p.r) { p.y = p.r; p.vy = -p.vy; }
+      if (p.y > COLLISION_H - p.r) { p.y = COLLISION_H - p.r; p.vy = -p.vy; }
+    });
+    // 노랑↔보라 충돌 검사
+    const ps = state.particles;
+    for (let i = 0; i < ps.length; i++) {
+      for (let j = i + 1; j < ps.length; j++) {
+        if (ps[i].type === ps[j].type) continue;
+        const dx = ps[i].x - ps[j].x, dy = ps[i].y - ps[j].y;
+        const d2 = dx * dx + dy * dy;
+        const rsum = ps[i].r + ps[j].r;
+        const key = i + '-' + j;
+        if (d2 < rsum * rsum) {
+          if (!state.lastHit.get(key)) {
+            state.count++;
+            document.getElementById('m1-coll-count-' + state.idx).textContent = state.count;
+            // 탄성 충돌 (속도 교환 단순화)
+            const tmpVx = ps[i].vx, tmpVy = ps[i].vy;
+            ps[i].vx = ps[j].vx; ps[i].vy = ps[j].vy;
+            ps[j].vx = tmpVx; ps[j].vy = tmpVy;
+            state.lastHit.set(key, true);
+          }
+        } else {
+          state.lastHit.set(key, false);
+        }
+      }
+    }
+    renderCollisionBox(state);
+  });
+  collisionAnimId = requestAnimationFrame(tickCollision);
+}
+
+function startCollisionSim() {
+  buildCollisionBoxes();
+  collisionState.forEach(renderCollisionBox);
+  if (collisionAnimId) cancelAnimationFrame(collisionAnimId);
+  collisionAnimId = requestAnimationFrame(tickCollision);
+}
+function stopCollisionSim() {
+  if (collisionAnimId) cancelAnimationFrame(collisionAnimId);
+  collisionAnimId = null;
+}
+
+document.getElementById('m1-reset').addEventListener('click', () => {
+  m1ResetAll();
+  m1ResetQuiz();
+  Object.keys(m1Results).forEach(k => delete m1Results[k]);
+  renderM1Chart();
+  document.getElementById('m1-next-wrap').style.display = 'none';
+  stopCollisionSim();
+  document.getElementById('m1-analysis-view').style.display = 'none';
+  document.getElementById('m1-main-view').style.display = 'block';
+});
+
+function renderM1Chart() {
+  const chart = document.getElementById('m1-chart');
+  chart.innerHTML = '';
+  const max = 60;
+  M1_DATA.forEach(d => {
+    const bar = document.createElement('div');
+    bar.className = 'bar';
+    const v = m1Results[d.conc];
+    bar.style.height = v ? (v / max * 100) + '%' : '4px';
+    bar.style.opacity = v ? '1' : '0.25';
+    bar.innerHTML = `<span class="bar-label">${v ? v + 's' : '–'}</span>
+                     <span class="bar-tag">${d.conc}M</span>`;
+    chart.appendChild(bar);
+  });
+}
+renderM1Chart();
+
+/* ============ M2 온도 ============ */
+const M2_DATA = {
+  ice:  { time: 60, label: '얼음물 0 ℃',   bath: '#cffafe', tag: 'ice' },
+  room: { time: 15, label: '실온 25 ℃',    bath: '#e2e8f0', tag: 'room' },
+  hot:  { time: 4,  label: '뜨거운물 60 ℃', bath: '#fed7aa', tag: 'hot' },
+};
+let m2Temp = 'room';
+const m2Bath = document.getElementById('m2-bath');
+const m2BathLabel = document.getElementById('m2-bath-label');
+const m2Liquid = document.getElementById('m2-liquid');
+const m2Result = document.getElementById('m2-result');
+const m2Rate = document.getElementById('m2-rate');
+const m2Sw = makeStopwatch(document.getElementById('m2-time'), document.getElementById('m2-stopwatch'));
+const m2Results = {};
+
+document.querySelectorAll('#m2-temp .selection-card').forEach(card => {
+  card.addEventListener('click', () => {
+    document.querySelectorAll('#m2-temp .selection-card').forEach(c => c.classList.remove('active'));
+    card.classList.add('active');
+    m2Temp = card.dataset.temp;
+    const d = M2_DATA[m2Temp];
+    m2Bath.setAttribute('fill', d.bath);
+    m2BathLabel.textContent = d.label + ' 수조';
+  });
+});
+
+document.getElementById('m2-start').addEventListener('click', () => {
+  const d = M2_DATA[m2Temp];
+  m2Liquid.style.transition = 'none';
+  m2Liquid.setAttribute('fill', '#e0f2fe');
+  m2Sw.reset();
+  m2Sw.start();
+  setTimeout(() => {
+    m2Liquid.style.transition = `fill ${Math.min(d.time * 0.3, 5)}s ease`;
+    m2Liquid.setAttribute('fill', '#0a0e3f');
+  }, 50);
+  setTimeout(() => {
+    m2Sw.stop(d.time);
+    m2Result.textContent = d.time.toFixed(1) + ' 초';
+    m2Rate.textContent = (M2_DATA.hot.time / d.time * (M2_DATA.hot.time === d.time ? 1 : 1)).toFixed(0) === '1' && d.tag !== 'hot' ? '—' : (60 / d.time).toFixed(2) + '×';
+    m2Results[m2Temp] = d.time;
+    renderM2Chart();
+  }, d.time * 1000 / 8);
+});
+
+document.getElementById('m2-reset').addEventListener('click', () => {
+  m2Liquid.style.transition = 'none';
+  m2Liquid.setAttribute('fill', '#e0f2fe');
+  m2Sw.reset();
+  m2Result.textContent = '—';
+  m2Rate.textContent = '—';
+});
+
+function renderM2Chart() {
+  const chart = document.getElementById('m2-chart');
+  chart.innerHTML = '';
+  const order = ['ice', 'room', 'hot'];
+  const max = 65;
+  order.forEach(k => {
+    const d = M2_DATA[k];
+    const bar = document.createElement('div');
+    bar.className = 'bar';
+    const v = m2Results[k];
+    bar.style.height = v ? (v / max * 100) + '%' : '4px';
+    bar.style.opacity = v ? '1' : '0.25';
+    bar.innerHTML = `<span class="bar-label">${v ? v + 's' : '–'}</span>
+                     <span class="bar-tag">${d.label.split(' ')[0]}</span>`;
+    chart.appendChild(bar);
+  });
+}
+renderM2Chart();
+
+/* ============ M3 촉매 ============ */
+let m3Catalyst = false;
+const m3Switch = document.getElementById('m3-switch');
+const m3Sw = makeStopwatch(document.getElementById('m3-time'), document.getElementById('m3-stopwatch'));
+const m3LiquidA = document.getElementById('m3-liquidA');
+const m3LiquidB = document.getElementById('m3-liquidB');
+const m3BubblesA = document.getElementById('m3-bubblesA');
+const m3BubblesB = document.getElementById('m3-bubblesB');
+let m3Anim = null;
+
+m3Switch.addEventListener('click', () => {
+  m3Catalyst = !m3Catalyst;
+  m3Switch.classList.toggle('on', m3Catalyst);
+  m3LiquidB.setAttribute('fill', m3Catalyst ? '#fef3c7' : '#fce7f3');
+});
+
+function spawnBubble(group, x) {
+  const b = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+  b.setAttribute('cx', x);
+  b.setAttribute('cy', 200);
+  b.setAttribute('r', 2 + Math.random() * 3);
+  b.setAttribute('fill', '#bae6fd');
+  b.setAttribute('opacity', '0.85');
+  group.appendChild(b);
+  let y = 200;
+  const speed = 0.5 + Math.random() * 0.7;
+  const id = setInterval(() => {
+    y -= speed;
+    b.setAttribute('cy', y);
+    if (y < 125) { clearInterval(id); b.remove(); }
+  }, 30);
+}
+
+document.getElementById('m3-start').addEventListener('click', () => {
+  if (m3Anim) clearInterval(m3Anim);
+  m3BubblesA.innerHTML = '';
+  m3BubblesB.innerHTML = '';
+  m3Sw.reset();
+  m3Sw.start();
+  let countA = 0, countB = 0;
+  const startT = performance.now();
+  m3Anim = setInterval(() => {
+    if (Math.random() < 0.15) { spawnBubble(m3BubblesA, 30 + Math.random() * 60); countA++; }
+    const bRate = m3Catalyst ? 0.95 : 0.15;
+    if (Math.random() < bRate) { spawnBubble(m3BubblesB, 30 + Math.random() * 60); countB++; }
+    if (performance.now() - startT > 12000) {
+      clearInterval(m3Anim);
+      m3Sw.stop(12);
+      document.getElementById('m3-resultA').textContent = countA;
+      document.getElementById('m3-resultB').textContent = countB;
+    }
+  }, 80);
+});
+
+document.getElementById('m3-reset').addEventListener('click', () => {
+  if (m3Anim) clearInterval(m3Anim);
+  m3BubblesA.innerHTML = '';
+  m3BubblesB.innerHTML = '';
+  m3Sw.reset();
+  document.getElementById('m3-resultA').textContent = '—';
+  document.getElementById('m3-resultB').textContent = '—';
+});
+
+/* ============ Review questions ============ */
+document.querySelectorAll('.review-options').forEach(group => {
+  const correct = parseInt(group.dataset.correct);
+  group.querySelectorAll('button').forEach((btn, i) => {
+    btn.addEventListener('click', () => {
+      group.querySelectorAll('button').forEach(b => b.classList.remove('correct', 'wrong'));
+      btn.classList.add(i === correct ? 'correct' : 'wrong');
+    });
+  });
+});
+</script>
+</body>
+</html>
