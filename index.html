@@ -586,6 +586,87 @@
   .lab-header {
     margin-bottom: 14px;
   }
+
+  /* ====== Lab 1 컴팩트 레이아웃 (한 화면에 맞춤) ====== */
+  #screen-lab1 .app { padding: 14px 18px 18px; max-width: 1320px; }
+  #screen-lab1 .back-btn { margin-bottom: 8px; padding: 6px 12px; font-size: 0.74rem; }
+  #screen-lab1 .lab-header { margin-bottom: 8px; }
+  #screen-lab1 .lab-header h2 { font-size: 1.35rem; }
+  #screen-lab1 .lab-header .lab-tag { font-size: 0.66rem; margin-bottom: 2px; }
+  #screen-lab1 .module-grid { gap: 14px; grid-template-columns: minmax(280px, 340px) 1fr; }
+  #screen-lab1 .ui-panel,
+  #screen-lab1 .canvas-container { padding: 14px 16px; border-radius: 12px; }
+  #screen-lab1 .ui-panel h3,
+  #screen-lab1 .canvas-container h3 { font-size: 0.95rem; margin: 0 0 8px; }
+  #screen-lab1 .panel-section { margin-bottom: 10px; }
+  #screen-lab1 .ui-panel p { font-size: 0.78rem !important; line-height: 1.45 !important; margin: 0 0 6px !important; }
+  #screen-lab1 .ui-panel small.thin { font-size: 0.7rem; }
+  #screen-lab1 #m1-quiz { gap: 5px !important; }
+  #screen-lab1 #m1-quiz > div { padding: 5px 8px !important; }
+  #screen-lab1 #m1-quiz > div > div:first-child { font-size: 0.7rem !important; min-width: 64px !important; }
+  #screen-lab1 #m1-quiz > div > div:first-child span { font-size: 0.64rem !important; }
+  #screen-lab1 #m1-quiz > div > div:nth-child(2) { font-size: 0.68rem !important; }
+  #screen-lab1 #m1-quiz input { width: 36px !important; padding: 2px 4px !important; font-size: 0.72rem !important; }
+  #screen-lab1 #m1-quiz-msg { font-size: 0.72rem; min-height: 14px; }
+  #screen-lab1 .btn-press { padding: 9px 14px; font-size: 0.86rem; }
+  #screen-lab1 #m1-check { padding: 7px 12px; font-size: 0.78rem; margin-top: 6px; }
+  #screen-lab1 .lab-bench {
+    min-height: 0;
+    padding: 18px 14px 0;
+    gap: 18px;
+    align-items: flex-end;
+    background: transparent;
+    position: relative;
+  }
+  /* 대리석 실험대 */
+  #screen-lab1 #m1-bench-surface {
+    margin-top: -4px;
+    height: 22px;
+    border-radius: 4px 4px 8px 8px;
+    background:
+      linear-gradient(180deg, #fafafa 0%, #f1f5f9 60%, #e2e8f0 100%),
+      radial-gradient(ellipse at 20% 40%, rgba(148,163,184,0.18), transparent 50%),
+      radial-gradient(ellipse at 70% 60%, rgba(100,116,139,0.12), transparent 55%);
+    background-blend-mode: multiply;
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,0.9),
+      inset 0 -2px 4px rgba(15,23,42,0.08),
+      0 6px 14px -6px rgba(15,23,42,0.18);
+    position: relative;
+    overflow: hidden;
+  }
+  #screen-lab1 #m1-bench-surface::before,
+  #screen-lab1 #m1-bench-surface::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(115deg, transparent 40%, rgba(148,163,184,0.22) 41%, transparent 43%),
+      linear-gradient(95deg, transparent 60%, rgba(100,116,139,0.18) 61%, transparent 64%),
+      linear-gradient(140deg, transparent 25%, rgba(148,163,184,0.15) 26%, transparent 28%);
+    background-size: 220px 100%, 180px 100%, 260px 100%;
+    background-repeat: repeat-x;
+    opacity: 0.7;
+  }
+  #screen-lab1 #m1-bench-surface::after {
+    background-image:
+      linear-gradient(85deg, transparent 30%, rgba(203,213,225,0.4) 31%, transparent 34%),
+      linear-gradient(105deg, transparent 70%, rgba(148,163,184,0.2) 71%, transparent 73%);
+    background-size: 300px 100%, 200px 100%;
+    opacity: 0.5;
+  }
+  #screen-lab1 .lab-bench svg { width: 130px !important; height: 215px !important; }
+  #screen-lab1 #m1-beakers { gap: 14px !important; }
+  #screen-lab1 #m1-beakers > div > div:nth-child(2) { font-size: 0.72rem !important; }
+  #screen-lab1 #m1-beakers > div > div:nth-child(3) { font-size: 0.62rem !important; }
+  #screen-lab1 #m1-beakers > div > div:nth-child(4) { font-size: 0.72rem !important; }
+  #screen-lab1 .stopwatch { padding: 10px 14px; min-width: 130px; }
+  #screen-lab1 .stopwatch .display { font-size: 1.55rem; }
+  #screen-lab1 .stopwatch .label-xs { font-size: 0.62rem; }
+  #screen-lab1 .bar-chart-wrap { padding-bottom: 22px; margin-top: 6px; }
+  #screen-lab1 .bar-chart { height: 90px; gap: 10px; margin-top: 8px; }
+  #screen-lab1 #m1-next-wrap { margin-top: 10px !important; }
+  #screen-lab1 #m1-next { padding: 9px 18px !important; font-size: 0.84rem; }
   .lab-header .lab-tag {
     display: inline-block;
     font-size: 0.7rem;
@@ -1252,12 +1333,14 @@ document.getElementById('m1-back-to-lab').addEventListener('click', () => {
   document.getElementById('m1-main-view').style.display = 'block';
 });
 
-// 농도별 분자 수 (KIO₃ + NaHSO₃ 반응종 한 쌍)
+// 농도별 분자 수
+// NaHSO₃(노랑)는 모든 비커에 같은 양 → 입자 수 동일
+// KIO₃(보라)는 농도에 따라 다름 → 입자 수가 비례하여 증가
 const M1_PARTICLES = [
-  { idx: 1, conc: 0.020, yellow: 1, purple: 1 },
-  { idx: 2, conc: 0.030, yellow: 1, purple: 2 },
-  { idx: 3, conc: 0.040, yellow: 2, purple: 2 },
-  { idx: 4, conc: 0.050, yellow: 2, purple: 3 },
+  { idx: 1, conc: 0.020, yellow: 3, purple: 2 },
+  { idx: 2, conc: 0.030, yellow: 3, purple: 3 },
+  { idx: 3, conc: 0.040, yellow: 3, purple: 4 },
+  { idx: 4, conc: 0.050, yellow: 3, purple: 5 },
 ];
 const COLLISION_W = 150, COLLISION_H = 150;
 let collisionAnimId = null;
@@ -1274,7 +1357,7 @@ function buildCollisionBoxes() {
       <div style="font-weight:700; font-size:0.78rem; color:#0f172a;">비커 ${d.idx} · ${d.conc.toFixed(3)} M</div>
       <svg id="m1-coll-svg-${d.idx}" viewBox="0 0 ${COLLISION_W} ${COLLISION_H}" width="100%" style="background:linear-gradient(180deg,#e0f2fe,#f0f9ff); border-radius:8px; max-width:160px;"></svg>
       <div style="font-weight:600; font-size:0.74rem; color:var(--text-sub);">
-        충돌 횟수 <span id="m1-coll-count-${d.idx}" style="font-weight:800; color:#4f46e5; font-variant-numeric:tabular-nums;">0</span>
+        유효 충돌 횟수 <span id="m1-coll-count-${d.idx}" style="font-weight:800; color:#4f46e5; font-variant-numeric:tabular-nums;">0</span>
       </div>
     `;
     wrap.appendChild(box);
