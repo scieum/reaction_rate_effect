@@ -810,47 +810,6 @@
             <div class="bar-chart" id="m1-chart"></div>
           </div>
 
-          <div id="m1-quiz-wrap" style="display:none; margin-top:18px; padding:14px 16px; background:#f8fafc; border:1.5px solid var(--border-color); border-radius:12px;" class="fade-in">
-            <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:8px;">
-              <span class="label-xs" id="m1-step-label">사후 퀴즈 1 / 3 — 희석 계산</span>
-              <span style="font-size:0.7rem; font-weight:700; color:var(--text-sub);" id="m1-step-dots">● ○ ○</span>
-            </div>
-
-            <div id="m1-step-1">
-              <p style="margin:6px 0 10px; font-size:0.83rem; color:var(--text-sub); font-weight:500; line-height:1.55;">
-                실험에 사용한 각 비커가 목표 농도가 되도록 <strong>KIO₃ 원액(0.05 M)</strong>과 <strong>증류수</strong>를 몇 mL씩 넣어야 했을지 입력하세요. (총 50 mL)
-              </p>
-              <div id="m1-quiz" style="display:flex; flex-direction:column; gap:8px;"></div>
-              <button class="btn-press btn-secondary" id="m1-check" style="margin-top:10px;">정답 확인</button>
-            </div>
-
-            <div id="m1-step-2" style="display:none;">
-              <p style="margin:6px 0 10px; font-size:0.83rem; color:var(--text-main); font-weight:600; line-height:1.55;">
-                Q. 분자들이 충돌한다고 모두 반응이 일어나는 것은 아닙니다. <strong>유효 충돌(effective collision)</strong>이 되기 위한 조건으로 옳은 것은?
-              </p>
-              <div id="m1-q2-options" style="display:flex; flex-direction:column; gap:6px;">
-                <button class="m1-opt" data-q="2" data-i="0">① 어떤 방향이든 충돌하기만 하면 된다</button>
-                <button class="m1-opt" data-q="2" data-i="1">② 활성화 에너지 이상의 에너지로, 적절한 방향으로 충돌해야 한다</button>
-                <button class="m1-opt" data-q="2" data-i="2">③ 분자의 질량이 같아야만 한다</button>
-                <button class="m1-opt" data-q="2" data-i="3">④ 충돌 횟수가 많을수록 모든 충돌이 반응으로 이어진다</button>
-              </div>
-            </div>
-
-            <div id="m1-step-3" style="display:none;">
-              <p style="margin:6px 0 10px; font-size:0.83rem; color:var(--text-main); font-weight:600; line-height:1.55;">
-                Q. 실험 결과처럼 <strong>농도가 높아지면</strong> 반응 속도가 빨라지는 이유로 가장 적절한 것은?
-              </p>
-              <div id="m1-q3-options" style="display:flex; flex-direction:column; gap:6px;">
-                <button class="m1-opt" data-q="3" data-i="0">① 분자 하나하나의 운동 에너지가 커지기 때문</button>
-                <button class="m1-opt" data-q="3" data-i="1">② 활성화 에너지가 낮아지기 때문</button>
-                <button class="m1-opt" data-q="3" data-i="2">③ 단위 부피당 분자 수가 늘어나 단위 시간당 유효 충돌 수가 증가하기 때문</button>
-                <button class="m1-opt" data-q="3" data-i="3">④ 분자 사이의 인력이 약해지기 때문</button>
-              </div>
-            </div>
-
-            <div id="m1-quiz-msg" style="margin-top:8px; font-size:0.82rem; font-weight:600; min-height:18px;"></div>
-          </div>
-
           <div id="m1-next-wrap" style="display:none; margin-top:20px; text-align:right;" class="fade-in">
             <button class="btn-press" id="m1-next" style="width:auto; padding:12px 24px;">
               다음 — 분자 충돌 분석 →
@@ -871,14 +830,60 @@
           </p>
           <div id="m1-collision-boxes" style="display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin-top:12px;"></div>
 
-          <div class="review" style="margin-top:24px;">
-            <h4>정리 질문</h4>
-            <p class="question">KIO₃ 농도가 높아질수록 반응 시간은 어떻게 변할까요?</p>
-            <div class="review-options" data-correct="0">
-              <button>① 짧아진다 (반응이 빨라진다)</button>
-              <button>② 길어진다 (반응이 느려진다)</button>
-              <button>③ 변하지 않는다</button>
+          <div id="m1-quiz-wrap" style="margin-top:24px; padding:16px 18px; background:#f8fafc; border:1.5px solid var(--border-color); border-radius:12px;">
+            <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:10px;">
+              <h4 style="margin:0;">정리 질문 <span id="m1-step-label" style="font-size:0.78rem; font-weight:600; color:var(--text-sub); margin-left:6px;">1 / 4 — 희석 계산</span></h4>
+              <span style="font-size:0.78rem; font-weight:700; color:var(--text-sub);" id="m1-step-dots">● ○ ○ ○</span>
             </div>
+
+            <!-- STEP 1: 희석 문제 -->
+            <div id="m1-step-1">
+              <p style="margin:6px 0 10px; font-size:0.86rem; color:var(--text-main); font-weight:600; line-height:1.55;">
+                Q1. 실험에 사용한 각 비커가 목표 농도가 되도록 <strong>KIO₃ 원액(0.05 M)</strong>과 <strong>증류수</strong>를 몇 mL씩 넣어야 했을지 입력하세요. (총 50 mL)
+              </p>
+              <div id="m1-quiz" style="display:flex; flex-direction:column; gap:8px;"></div>
+              <button class="btn-press btn-secondary" id="m1-check" style="margin-top:10px;">정답 확인</button>
+            </div>
+
+            <!-- STEP 2: 유효 충돌 조건 -->
+            <div id="m1-step-2" style="display:none;">
+              <p style="margin:6px 0 10px; font-size:0.86rem; color:var(--text-main); font-weight:600; line-height:1.55;">
+                Q2. 분자들이 충돌한다고 모두 반응이 일어나는 것은 아닙니다. <strong>유효 충돌(effective collision)</strong>이 되기 위한 조건으로 옳은 것은?
+              </p>
+              <div style="display:flex; flex-direction:column; gap:6px;">
+                <button class="m1-opt" data-q="2" data-i="0">① 어떤 방향이든 충돌하기만 하면 된다</button>
+                <button class="m1-opt" data-q="2" data-i="1">② 활성화 에너지 이상의 에너지로, 적절한 방향으로 충돌해야 한다</button>
+                <button class="m1-opt" data-q="2" data-i="2">③ 분자의 질량이 같아야만 한다</button>
+                <button class="m1-opt" data-q="2" data-i="3">④ 충돌 횟수가 많을수록 모든 충돌이 반응으로 이어진다</button>
+              </div>
+            </div>
+
+            <!-- STEP 3: 농도와 유효 충돌 -->
+            <div id="m1-step-3" style="display:none;">
+              <p style="margin:6px 0 10px; font-size:0.86rem; color:var(--text-main); font-weight:600; line-height:1.55;">
+                Q3. 위 시뮬레이션처럼 <strong>농도가 높아지면</strong> 반응 속도가 빨라지는 이유로 가장 적절한 것은?
+              </p>
+              <div style="display:flex; flex-direction:column; gap:6px;">
+                <button class="m1-opt" data-q="3" data-i="0">① 분자 하나하나의 운동 에너지가 커지기 때문</button>
+                <button class="m1-opt" data-q="3" data-i="1">② 활성화 에너지가 낮아지기 때문</button>
+                <button class="m1-opt" data-q="3" data-i="2">③ 단위 부피당 분자 수가 늘어나 단위 시간당 유효 충돌 수가 증가하기 때문</button>
+                <button class="m1-opt" data-q="3" data-i="3">④ 분자 사이의 인력이 약해지기 때문</button>
+              </div>
+            </div>
+
+            <!-- STEP 4: 결론 -->
+            <div id="m1-step-4" style="display:none;">
+              <p style="margin:6px 0 10px; font-size:0.86rem; color:var(--text-main); font-weight:600; line-height:1.55;">
+                Q4. KIO₃ 농도가 높아질수록 반응 시간은 어떻게 변할까요?
+              </p>
+              <div style="display:flex; flex-direction:column; gap:6px;">
+                <button class="m1-opt" data-q="4" data-i="0">① 짧아진다 (반응이 빨라진다)</button>
+                <button class="m1-opt" data-q="4" data-i="1">② 길어진다 (반응이 느려진다)</button>
+                <button class="m1-opt" data-q="4" data-i="2">③ 변하지 않는다</button>
+              </div>
+            </div>
+
+            <div id="m1-quiz-msg" style="margin-top:10px; font-size:0.84rem; font-weight:600; min-height:18px;"></div>
           </div>
         </div>
       </div>
@@ -1221,18 +1226,19 @@ buildM1Quiz();
 
 let m1QuizPassed = false;
 let m1QuizStep = 1;
-const M1_QUIZ_ANSWERS = { 2: 1, 3: 2 }; // 정답 인덱스
+const M1_QUIZ_ANSWERS = { 2: 1, 3: 2, 4: 0 }; // 정답 인덱스
 const M1_STEP_LABELS = {
-  1: '사후 퀴즈 1 / 3 — 희석 계산',
-  2: '사후 퀴즈 2 / 3 — 유효 충돌 조건',
-  3: '사후 퀴즈 3 / 3 — 농도와 유효 충돌',
+  1: '1 / 4 — 희석 계산',
+  2: '2 / 4 — 유효 충돌 조건',
+  3: '3 / 4 — 농도와 유효 충돌',
+  4: '4 / 4 — 결론',
 };
-const M1_STEP_DOTS = { 1: '● ○ ○', 2: '● ● ○', 3: '● ● ●' };
+const M1_STEP_DOTS = { 1: '● ○ ○ ○', 2: '● ● ○ ○', 3: '● ● ● ○', 4: '● ● ● ●' };
 
 function m1SetStartEnabled(on) { /* no-op: 시작은 항상 가능 */ }
 function m1ShowStep(n) {
   m1QuizStep = n;
-  [1,2,3].forEach(i => {
+  [1,2,3,4].forEach(i => {
     document.getElementById('m1-step-' + i).style.display = (i === n) ? 'block' : 'none';
   });
   document.getElementById('m1-step-label').textContent = M1_STEP_LABELS[n];
@@ -1286,9 +1292,11 @@ document.querySelectorAll('.m1-opt').forEach(btn => {
         m1SetMsg('✓ 정답! 다음 문제로 넘어갑니다…', true);
         setTimeout(() => m1ShowStep(3), 800);
       } else if (q === 3) {
-        m1SetMsg('✓ 모든 퀴즈를 통과했습니다! 분자 충돌 분석으로 넘어갑니다.', true);
+        m1SetMsg('✓ 정답! 다음 문제로 넘어갑니다…', true);
+        setTimeout(() => m1ShowStep(4), 800);
+      } else if (q === 4) {
+        m1SetMsg('✓ 모든 정리 질문을 통과했습니다! 수고하셨습니다.', true);
         m1QuizPassed = true;
-        document.getElementById('m1-next-wrap').style.display = 'block';
       }
     } else {
       btn.classList.add('wrong');
@@ -1399,7 +1407,7 @@ document.getElementById('m1-start').addEventListener('click', () => {
     const slowest = Math.max(...M1_DATA.map(d => d.time));
     m1Timers.push(setTimeout(() => {
       m1Sw.stop(slowest);
-      document.getElementById('m1-quiz-wrap').style.display = 'block';
+      document.getElementById('m1-next-wrap').style.display = 'block';
     }, slowest * 1000 + 100));
   }, POUR_MS + 200));
 });
@@ -1550,7 +1558,6 @@ document.getElementById('m1-reset').addEventListener('click', () => {
   Object.keys(m1Results).forEach(k => delete m1Results[k]);
   renderM1Chart();
   document.getElementById('m1-next-wrap').style.display = 'none';
-  document.getElementById('m1-quiz-wrap').style.display = 'none';
   stopCollisionSim();
   document.getElementById('m1-analysis-view').style.display = 'none';
   document.getElementById('m1-main-view').style.display = 'block';
