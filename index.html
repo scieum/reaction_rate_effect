@@ -1110,12 +1110,14 @@
             <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/></svg>
             실험으로 돌아가기
           </button>
-          <h3>분자 운동 에너지 시뮬레이션</h3>
+          <h3>맥스웰-볼츠만 에너지 분포</h3>
           <p style="margin:6px 0 14px; color:var(--text-sub); font-size:0.88rem; font-weight:500; line-height:1.6;">
-            온도가 높을수록 분자의 평균 운동 에너지가 커져 <strong>활성화 에너지를 넘는 충돌</strong> 비율이 증가합니다.
-            아래 3개 상자에서 같은 시간 동안 일어나는 유효 충돌 수를 비교해 보세요.
+            온도가 높을수록 분자의 평균 운동 에너지가 커져<br><strong>활성화 에너지(E<sub>a</sub>) 이상의 에너지를 가진 분자 수</strong>가 증가합니다.
           </p>
-          <div id="m2-collision-boxes" style="display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-top:12px;"></div>
+          <div id="m2-mb-graph" style="margin-top:12px; background:#f8fafc; border:1.5px solid var(--border-color); border-radius:12px; padding:14px; text-align:center;">
+            <svg id="m2-mb-svg" viewBox="0 0 520 300" width="100%" style="max-width:560px;"></svg>
+            <div id="m2-mb-legend" style="display:flex; justify-content:center; gap:18px; margin-top:8px; font-size:0.78rem; font-weight:600;"></div>
+          </div>
 
           <div id="m2-quiz-wrap" style="margin-top:24px; padding:16px 18px; background:#f8fafc; border:1.5px solid var(--border-color); border-radius:12px;">
             <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:10px;">
@@ -1139,7 +1141,7 @@
             <!-- STEP 2: 온도와 활성화 에너지 -->
             <div id="m2-step-2" style="display:none;">
               <p style="margin:6px 0 10px; font-size:0.86rem; color:var(--text-main); font-weight:600; line-height:1.55;">
-                Q2. 위 시뮬레이션처럼 <strong>온도가 높아지면</strong> 반응 속도가 빨라지는 이유로 가장 적절한 것은?
+                Q2. 위 그래프처럼 <strong>온도가 높아지면</strong> 반응 속도가 빨라지는 이유로 가장 적절한 것은?
               </p>
               <div style="display:flex; flex-direction:column; gap:6px;">
                 <button class="m2-opt" data-q="2" data-i="0">① 활성화 에너지가 낮아지기 때문</button>
@@ -2184,137 +2186,129 @@ document.getElementById('m2-start').addEventListener('click', () => {
   }, M2_POUR_MS + 200));
 });
 
-/* ----- 뷰 전환 + 분자 운동 에너지 시뮬레이션 ----- */
+/* ----- 뷰 전환 + 맥스웰-볼츠만 분포 그래프 ----- */
 document.getElementById('m2-next').addEventListener('click', () => {
   document.getElementById('m2-main-view').style.display = 'none';
   document.getElementById('m2-analysis-view').style.display = 'block';
-  startM2CollisionSim();
+  drawMBGraph();
 });
 document.getElementById('m2-back-to-lab').addEventListener('click', () => {
-  stopM2CollisionSim();
   document.getElementById('m2-analysis-view').style.display = 'none';
   document.getElementById('m2-main-view').style.display = 'block';
 });
 
-const M2_PARTICLES = [
-  { idx: 1, key: 'ice',  label: '얼음물 0℃',    yellow: 3, purple: 3, speedMult: 0.35, effectiveProb: 0.08 },
-  { idx: 2, key: 'room', label: '실온 25℃',     yellow: 3, purple: 3, speedMult: 0.7,  effectiveProb: 0.25 },
-  { idx: 3, key: 'hot',  label: '뜨거운물 60℃', yellow: 3, purple: 3, speedMult: 1.2,  effectiveProb: 0.55 },
-];
-const M2_COLL_W = 150, M2_COLL_H = 150;
-let m2CollisionAnimId = null;
-let m2CollisionState = [];
-
-function buildM2CollisionBoxes() {
-  const wrap = document.getElementById('m2-collision-boxes');
-  wrap.innerHTML = '';
-  m2CollisionState = [];
-  M2_PARTICLES.forEach(d => {
-    const box = document.createElement('div');
-    box.style.cssText = 'background:#f1f5f9; border:1.5px solid var(--border-color); border-radius:12px; padding:10px; display:flex; flex-direction:column; align-items:center; gap:6px;';
-    box.innerHTML = `
-      <div style="font-weight:700; font-size:0.78rem; color:#0f172a;">${d.label}</div>
-      <svg id="m2-coll-svg-${d.idx}" viewBox="0 0 ${M2_COLL_W} ${M2_COLL_H}" width="100%" style="background:linear-gradient(180deg,#e0f2fe,#f0f9ff); border-radius:8px; max-width:160px;"></svg>
-      <div style="font-weight:600; font-size:0.74rem; color:var(--text-sub);">
-        유효 충돌 <span id="m2-coll-count-${d.idx}" style="font-weight:800; color:#4f46e5; font-variant-numeric:tabular-nums;">0</span>
-      </div>
-    `;
-    wrap.appendChild(box);
-
-    const particles = [];
-    for (let i = 0; i < d.yellow; i++) particles.push(makeM2Particle('yellow', d.speedMult));
-    for (let i = 0; i < d.purple; i++) particles.push(makeM2Particle('purple', d.speedMult));
-    m2CollisionState.push({ idx: d.idx, particles, count: 0, lastHit: new Map(), effectiveProb: d.effectiveProb });
-  });
+/* 맥스웰-볼츠만 분포 f(E) = C * sqrt(E) * exp(-E / kT) */
+function mbDist(E, kT) {
+  return Math.sqrt(E) * Math.exp(-E / kT);
 }
 
-function makeM2Particle(type, speedMult) {
-  const angle = Math.random() * Math.PI * 2;
-  const speed = (0.7 + Math.random() * 0.4) * speedMult;
-  return {
-    type,
-    x: 20 + Math.random() * (M2_COLL_W - 40),
-    y: 20 + Math.random() * (M2_COLL_H - 40),
-    vx: Math.cos(angle) * speed,
-    vy: Math.sin(angle) * speed,
-    r: 9,
-  };
-}
+function drawMBGraph() {
+  const svg = document.getElementById('m2-mb-svg');
+  const legend = document.getElementById('m2-mb-legend');
 
-function renderM2CollisionBox(state) {
-  const svg = document.getElementById('m2-coll-svg-' + state.idx);
-  let html = '';
-  state.particles.forEach(p => {
-    const fill = p.type === 'yellow'
-      ? 'url(#m2-grad-y-' + state.idx + ')'
-      : 'url(#m2-grad-p-' + state.idx + ')';
-    html += `<circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="${p.r}" fill="${fill}" stroke="#1e293b" stroke-width="0.8"/>`;
-  });
-  svg.innerHTML = `
-    <defs>
-      <radialGradient id="m2-grad-y-${state.idx}" cx="35%" cy="35%">
-        <stop offset="0%" stop-color="#fef9c3"/>
-        <stop offset="60%" stop-color="#facc15"/>
-        <stop offset="100%" stop-color="#a16207"/>
-      </radialGradient>
-      <radialGradient id="m2-grad-p-${state.idx}" cx="35%" cy="35%">
-        <stop offset="0%" stop-color="#e9d5ff"/>
-        <stop offset="60%" stop-color="#a855f7"/>
-        <stop offset="100%" stop-color="#581c87"/>
-      </radialGradient>
-    </defs>
-    ${html}
-  `;
-}
+  /* 그래프 영역: viewBox 520x300, 패딩 좌50 우20 상20 하50 */
+  const L = 50, R = 500, T = 20, B = 250;
+  const W = R - L, H = B - T;
 
-function tickM2Collision() {
-  m2CollisionState.forEach(state => {
-    state.particles.forEach(p => {
-      p.x += p.vx;
-      p.y += p.vy;
-      if (p.x < p.r) { p.x = p.r; p.vx = -p.vx; }
-      if (p.x > M2_COLL_W - p.r) { p.x = M2_COLL_W - p.r; p.vx = -p.vx; }
-      if (p.y < p.r) { p.y = p.r; p.vy = -p.vy; }
-      if (p.y > M2_COLL_H - p.r) { p.y = M2_COLL_H - p.r; p.vy = -p.vy; }
-    });
-    const ps = state.particles;
-    for (let i = 0; i < ps.length; i++) {
-      for (let j = i + 1; j < ps.length; j++) {
-        if (ps[i].type === ps[j].type) continue;
-        const dx = ps[i].x - ps[j].x, dy = ps[i].y - ps[j].y;
-        const d2 = dx * dx + dy * dy;
-        const rsum = ps[i].r + ps[j].r;
-        const key = i + '-' + j;
-        if (d2 < rsum * rsum) {
-          if (!state.lastHit.get(key)) {
-            if (Math.random() < state.effectiveProb) {
-              state.count++;
-              document.getElementById('m2-coll-count-' + state.idx).textContent = state.count;
-            }
-            const tmpVx = ps[i].vx, tmpVy = ps[i].vy;
-            ps[i].vx = ps[j].vx; ps[i].vy = ps[j].vy;
-            ps[j].vx = tmpVx; ps[j].vy = tmpVy;
-            state.lastHit.set(key, true);
-          }
-        } else {
-          state.lastHit.set(key, false);
-        }
-      }
+  /* 온도별 kT 파라미터 (상대 단위) */
+  const curves = [
+    { label: '얼음물 (0℃)',    kT: 0.8,  color: '#2563eb', fillColor: 'rgba(37,99,235,0.15)' },
+    { label: '실온 (25℃)',     kT: 1.4,  color: '#64748b', fillColor: 'rgba(100,116,139,0.12)' },
+    { label: '뜨거운물 (60℃)', kT: 2.2,  color: '#dc2626', fillColor: 'rgba(220,38,38,0.15)' },
+  ];
+
+  const Emax = 12;        /* x축 최대 에너지 */
+  const Ea = 5.0;         /* 활성화 에너지 위치 */
+  const steps = 200;
+  const dx = Emax / steps;
+
+  /* y축 최대값 구하기 */
+  let yMax = 0;
+  curves.forEach(c => {
+    for (let i = 1; i <= steps; i++) {
+      const v = mbDist(i * dx, c.kT);
+      if (v > yMax) yMax = v;
     }
-    renderM2CollisionBox(state);
   });
-  m2CollisionAnimId = requestAnimationFrame(tickM2Collision);
-}
+  yMax *= 1.15;
 
-function startM2CollisionSim() {
-  buildM2CollisionBoxes();
-  m2CollisionState.forEach(renderM2CollisionBox);
-  if (m2CollisionAnimId) cancelAnimationFrame(m2CollisionAnimId);
-  m2CollisionAnimId = requestAnimationFrame(tickM2Collision);
-}
-function stopM2CollisionSim() {
-  if (m2CollisionAnimId) cancelAnimationFrame(m2CollisionAnimId);
-  m2CollisionAnimId = null;
+  function toX(E) { return L + (E / Emax) * W; }
+  function toY(v) { return B - (v / yMax) * H; }
+
+  let html = '';
+
+  /* 배경 */
+  html += `<rect x="${L}" y="${T}" width="${W}" height="${H}" fill="white" rx="2"/>`;
+
+  /* Ea 이상 영역 빗금 채우기 (각 온도별) */
+  curves.forEach((c, ci) => {
+    let fillPath = `M${toX(Ea).toFixed(1)},${B}`;
+    for (let i = Math.round(Ea / dx); i <= steps; i++) {
+      const E = i * dx;
+      fillPath += ` L${toX(E).toFixed(1)},${toY(mbDist(E, c.kT)).toFixed(1)}`;
+    }
+    fillPath += ` L${toX(Emax).toFixed(1)},${B} Z`;
+    /* 패턴 빗금 (온도별 다른 각도) */
+    const angle = ci === 0 ? 45 : ci === 1 ? 90 : 135;
+    html += `
+      <defs>
+        <pattern id="m2-hatch-${ci}" patternUnits="userSpaceOnUse" width="6" height="6" patternTransform="rotate(${angle})">
+          <line x1="0" y1="0" x2="0" y2="6" stroke="${c.color}" stroke-width="1.2" stroke-opacity="0.35"/>
+        </pattern>
+      </defs>
+      <path d="${fillPath}" fill="${c.fillColor}"/>
+      <path d="${fillPath}" fill="url(#m2-hatch-${ci})"/>
+    `;
+  });
+
+  /* Ea 수직 점선 */
+  html += `<line x1="${toX(Ea).toFixed(1)}" y1="${T}" x2="${toX(Ea).toFixed(1)}" y2="${B}"
+            stroke="#0f172a" stroke-width="1.5" stroke-dasharray="5,4"/>`;
+  html += `<text x="${toX(Ea).toFixed(1)}" y="${B + 16}" text-anchor="middle"
+            font-size="12" font-weight="800" fill="#0f172a">E<tspan font-size="9" dy="3">a</tspan></text>`;
+
+  /* 곡선 그리기 */
+  curves.forEach(c => {
+    let path = '';
+    for (let i = 0; i <= steps; i++) {
+      const E = i * dx;
+      const v = E === 0 ? 0 : mbDist(E, c.kT);
+      const cmd = i === 0 ? 'M' : 'L';
+      path += `${cmd}${toX(E).toFixed(1)},${toY(v).toFixed(1)} `;
+    }
+    html += `<path d="${path}" fill="none" stroke="${c.color}" stroke-width="2.5" stroke-linecap="round"/>`;
+  });
+
+  /* 빗금 영역 라벨 */
+  html += `<text x="${toX(8)}" y="${toY(mbDist(5.5, 2.2)) - 6}" text-anchor="middle"
+            font-size="9.5" font-weight="700" fill="#0f172a">반응을 일으킬 수</text>`;
+  html += `<text x="${toX(8)}" y="${toY(mbDist(5.5, 2.2)) + 7}" text-anchor="middle"
+            font-size="9.5" font-weight="700" fill="#0f172a">있는 분자</text>`;
+
+  /* 축 */
+  html += `<line x1="${L}" y1="${B}" x2="${R}" y2="${B}" stroke="#334155" stroke-width="1.8"/>`;
+  html += `<line x1="${L}" y1="${B}" x2="${L}" y2="${T}" stroke="#334155" stroke-width="1.8"/>`;
+  /* 화살표 */
+  html += `<polygon points="${R},${B} ${R-7},${B-4} ${R-7},${B+4}" fill="#334155"/>`;
+  html += `<polygon points="${L},${T} ${L-4},${T+7} ${L+4},${T+7}" fill="#334155"/>`;
+  /* 축 라벨 */
+  html += `<text x="${(L + R) / 2}" y="${B + 38}" text-anchor="middle" font-size="12" font-weight="700" fill="#334155">운동 에너지</text>`;
+  html += `<text x="${L - 12}" y="${(T + B) / 2}" text-anchor="middle" font-size="12" font-weight="700" fill="#334155"
+            transform="rotate(-90,${L - 12},${(T + B) / 2})">분자 수</text>`;
+
+  /* T1 < T2 범례 박스 */
+  html += `<rect x="${R - 105}" y="${T + 5}" width="100" height="28" rx="4" fill="white" stroke="#e2e8f0" stroke-width="1"/>`;
+  html += `<text x="${R - 55}" y="${T + 24}" text-anchor="middle" font-size="11" font-weight="700" fill="#334155">T₁ &lt; T₂ &lt; T₃</text>`;
+
+  svg.innerHTML = html;
+
+  /* 범례 */
+  legend.innerHTML = curves.map(c =>
+    `<span style="display:flex; align-items:center; gap:5px;">
+      <span style="display:inline-block; width:18px; height:3px; background:${c.color}; border-radius:2px;"></span>
+      ${c.label}
+    </span>`
+  ).join('');
 }
 
 document.getElementById('m2-reset').addEventListener('click', () => {
@@ -2323,7 +2317,6 @@ document.getElementById('m2-reset').addEventListener('click', () => {
   Object.keys(m2Results).forEach(k => delete m2Results[k]);
   renderM2Chart();
   document.getElementById('m2-next-wrap').style.display = 'none';
-  stopM2CollisionSim();
   document.getElementById('m2-analysis-view').style.display = 'none';
   document.getElementById('m2-main-view').style.display = 'block';
 });
