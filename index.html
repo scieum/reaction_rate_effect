@@ -744,6 +744,59 @@
   #screen-lab2 .bar-chart { height: 90px; gap: 10px; margin-top: 8px; }
   #screen-lab2 #m2-next-wrap { margin-top: 10px !important; }
   #screen-lab2 #m2-next { padding: 9px 18px !important; font-size: 0.84rem; }
+
+  /* ====== Lab 3 컴팩트 레이아웃 (Lab 1/2와 동일) ====== */
+  #screen-lab3 .app { padding: 14px 18px 18px; max-width: 1320px; }
+  #screen-lab3 .back-btn { margin-bottom: 8px; padding: 6px 12px; font-size: 0.74rem; }
+  #screen-lab3 .lab-header { margin-bottom: 8px; }
+  #screen-lab3 .lab-header h2 { font-size: 1.35rem; }
+  #screen-lab3 .lab-header .lab-tag { font-size: 0.66rem; margin-bottom: 2px; }
+  #screen-lab3 .module-grid { gap: 14px; grid-template-columns: minmax(280px, 340px) 1fr; }
+  #screen-lab3 .ui-panel,
+  #screen-lab3 .canvas-container { padding: 14px 16px; border-radius: 12px; }
+  #screen-lab3 .ui-panel h3,
+  #screen-lab3 .canvas-container h3 { font-size: 0.95rem; margin: 0 0 8px; }
+  #screen-lab3 .panel-section { margin-bottom: 10px; }
+  #screen-lab3 .ui-panel p { font-size: 0.78rem !important; line-height: 1.45 !important; margin: 0 0 6px !important; }
+  #screen-lab3 .ui-panel small.thin { font-size: 0.7rem; }
+  #screen-lab3 #m3-quiz { gap: 5px !important; }
+  #screen-lab3 #m3-quiz > div { padding: 5px 8px !important; }
+  #screen-lab3 #m3-quiz > div > div:first-child { font-size: 0.7rem !important; min-width: 64px !important; }
+  #screen-lab3 #m3-quiz > div > div:first-child span { font-size: 0.64rem !important; }
+  #screen-lab3 #m3-quiz > div > div:nth-child(2) { font-size: 0.68rem !important; }
+  #screen-lab3 #m3-quiz input { width: 54px !important; min-width: 54px !important; flex-shrink: 0 !important; padding: 4px 6px !important; font-size: 0.78rem !important; box-sizing: border-box !important; }
+  #screen-lab3 #m3-dilution-msg { font-size: 0.72rem; min-height: 14px; }
+  #screen-lab3 .m3-opt {
+    text-align: left; padding: 8px 10px; font-size: 0.78rem; font-weight: 600;
+    background: #f8fafc; border: 1.5px solid var(--border-color); border-radius: 8px;
+    color: #0f172a; cursor: pointer; transition: all 0.18s; font-family: inherit;
+  }
+  #screen-lab3 .m3-opt:hover:not(:disabled) { background: #eef2ff; border-color: #6366f1; }
+  #screen-lab3 .m3-opt.correct { background: #ecfdf5; border-color: #10b981; color: #047857; }
+  #screen-lab3 .m3-opt.wrong { background: #fef2f2; border-color: #ef4444; color: #b91c1c; }
+  #screen-lab3 .m3-opt:disabled { cursor: default; }
+  #screen-lab3 .btn-press { padding: 9px 14px; font-size: 0.86rem; }
+  #screen-lab3 #m3-check { padding: 7px 12px; font-size: 0.78rem; margin-top: 6px; }
+  #screen-lab3 .lab-bench {
+    min-height: 0;
+    padding: 18px 14px 0;
+    gap: 18px;
+    align-items: flex-end;
+    background: transparent;
+    position: relative;
+  }
+  #screen-lab3 .lab-bench svg { width: 140px !important; height: 220px !important; }
+  #screen-lab3 #m3-beakers { gap: 40px !important; }
+  #screen-lab3 #m3-beakers > div > div:nth-child(2) { font-size: 0.72rem !important; }
+  #screen-lab3 #m3-beakers > div > div:nth-child(3) { font-size: 0.62rem !important; }
+  #screen-lab3 #m3-beakers > div > div:nth-child(4) { font-size: 0.72rem !important; }
+  #screen-lab3 .stopwatch { padding: 10px 14px; min-width: 130px; }
+  #screen-lab3 .stopwatch .display { font-size: 1.55rem; }
+  #screen-lab3 .stopwatch .label-xs { font-size: 0.62rem; }
+  #screen-lab3 .bar-chart-wrap { padding-bottom: 22px; margin-top: 6px; }
+  #screen-lab3 .bar-chart { height: 90px; gap: 10px; margin-top: 8px; }
+  #screen-lab3 #m3-next-wrap { margin-top: 10px !important; }
+  #screen-lab3 #m3-next { padding: 9px 18px !important; font-size: 0.84rem; }
 </style>
 </head>
 <body>
@@ -1092,16 +1145,26 @@
   <section class="module active" id="m3">
     <div class="module-grid">
       <div class="ui-panel">
-        <h3>실험 변수</h3>
+        <h3>실험 안내</h3>
         <div class="panel-section">
-          <div class="toggle-row">
-            <label>비커 B에 KI 촉매 추가</label>
-            <div class="switch" id="m3-switch"></div>
-          </div>
-          <small class="thin">A: 촉매 없음 · B: KI 추가</small>
+          <p style="margin:0 0 8px; font-weight:500; color:var(--text-main); font-size:0.9rem; line-height:1.6;">
+            H₂O₂(과산화 수소)의 분해 반응을<br><strong>촉매 유무</strong>에 따라 비교합니다.
+          </p>
+          <small class="thin">비커 A: H₂O₂만 · 비커 B: H₂O₂ + KI 촉매</small>
         </div>
+
         <div class="panel-section">
-          <button class="btn-press" id="m3-start">반응 시작</button>
+          <span class="label-xs">예측 문제</span>
+          <p style="margin:6px 0 10px; font-size:0.83rem; color:var(--text-sub); font-weight:500; line-height:1.55;">
+            어느 비커에서 거품이 더 많이 발생할지 예측하세요.<br>(1 = 더 많음, 2 = 더 적음)
+          </p>
+          <div id="m3-quiz" style="display:flex; flex-direction:column; gap:8px;"></div>
+          <button class="btn-press btn-secondary" id="m3-check" style="margin-top:10px;">예측 완료</button>
+          <div id="m3-dilution-msg" style="margin-top:8px; font-size:0.82rem; font-weight:600; min-height:18px;"></div>
+        </div>
+
+        <div class="panel-section">
+          <button class="btn-press" id="m3-start" disabled>2개 비커 동시 시작</button>
         </div>
         <div class="panel-section">
           <button class="btn-press btn-secondary" id="m3-reset">초기화</button>
@@ -1109,56 +1172,93 @@
       </div>
 
       <div class="canvas-container">
-        <h3>실험대 — H₂O₂ 분해</h3>
-        <div class="lab-bench">
-          <!-- Beaker A -->
-          <svg viewBox="0 0 110 220" width="120" height="230">
-            <path d="M20 30 L20 195 Q20 208 33 208 L87 208 Q100 208 100 195 L100 30"
-                  fill="none" stroke="#475569" stroke-width="2.5"/>
-            <path d="M14 30 L106 30" stroke="#475569" stroke-width="2.5"/>
-            <rect id="m3-liquidA" x="22" y="120" width="76" height="86" fill="#fce7f3"/>
-            <g id="m3-bubblesA"></g>
-            <text x="60" y="22" text-anchor="middle" font-size="11" font-weight="700" fill="#475569">A · 촉매 없음</text>
-          </svg>
+        <!-- ===== 실험 뷰 ===== -->
+        <div id="m3-main-view">
+          <h3>실험대 — H₂O₂ 분해</h3>
+          <div class="lab-bench" id="m3-bench" style="flex-wrap:wrap; gap:14px;">
+            <div id="m3-beakers" style="display:flex; gap:40px; align-items:flex-end; flex-wrap:wrap; justify-content:center;"></div>
+            <div class="stopwatch" id="m3-stopwatch">
+              <span class="label-xs">STOPWATCH</span>
+              <div class="display" id="m3-time">00:00.0</div>
+            </div>
+          </div>
 
-          <!-- Beaker B -->
-          <svg viewBox="0 0 110 220" width="120" height="230">
-            <path d="M20 30 L20 195 Q20 208 33 208 L87 208 Q100 208 100 195 L100 30"
-                  fill="none" stroke="#475569" stroke-width="2.5"/>
-            <path d="M14 30 L106 30" stroke="#475569" stroke-width="2.5"/>
-            <rect id="m3-liquidB" x="22" y="120" width="76" height="86" fill="#fce7f3"/>
-            <g id="m3-bubblesB"></g>
-            <text x="60" y="22" text-anchor="middle" font-size="11" font-weight="700" fill="#475569">B · KI 첨가</text>
-          </svg>
+          <div class="bar-chart-wrap">
+            <small class="label-xs">거품 발생량 비교</small>
+            <div class="bar-chart" id="m3-chart"></div>
+          </div>
 
-          <div class="stopwatch" id="m3-stopwatch">
-            <span class="label-xs">STOPWATCH</span>
-            <div class="display" id="m3-time">00:00.0</div>
+          <div id="m3-next-wrap" style="display:none; margin-top:20px; text-align:right;" class="fade-in">
+            <button class="btn-press" id="m3-next" style="width:auto; padding:12px 24px;">
+              다음 — 반응 경로 분석 →
+            </button>
           </div>
         </div>
 
-        <div class="result-row">
-          <div class="result-card">
-            <span class="label-xs">A 거품량 (상대)</span>
-            <span class="num" id="m3-resultA">—</span>
-          </div>
-          <div class="result-card">
-            <span class="label-xs">B 거품량 (상대)</span>
-            <span class="num" id="m3-resultB">—</span>
-          </div>
-        </div>
+        <!-- ===== 분석 뷰 ===== -->
+        <div id="m3-analysis-view" style="display:none;" class="fade-in">
+          <button class="back-btn" id="m3-back-to-lab">
+            <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/></svg>
+            실험으로 돌아가기
+          </button>
+          <h3>활성화 에너지 시뮬레이션</h3>
+          <p style="margin:6px 0 14px; color:var(--text-sub); font-size:0.88rem; font-weight:500; line-height:1.6;">
+            촉매는 <strong>활성화 에너지가 낮은 새로운 반응 경로</strong>를 제공하여 유효 충돌 비율을 높입니다.
+            아래 2개 상자에서 같은 시간 동안 일어나는 유효 충돌 수를 비교해 보세요.
+          </p>
+          <div id="m3-collision-boxes" style="display:grid; grid-template-columns:repeat(2,1fr); gap:10px; margin-top:12px;"></div>
 
-        <div class="review">
-          <h4>정리 질문</h4>
-          <p class="question">KI가 H₂O₂ 분해 반응에 미치는 역할로 옳은 것은?</p>
-          <div class="review-options" data-correct="0">
-            <button>① 반응 속도를 빠르게 하는 촉매로 작용한다</button>
-            <button>② 반응에 직접 참여하여 소모된다</button>
-            <button>③ 반응을 억제하여 거품 발생을 막는다</button>
+          <div id="m3-quiz-wrap" style="margin-top:24px; padding:16px 18px; background:#f8fafc; border:1.5px solid var(--border-color); border-radius:12px;">
+            <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:10px;">
+              <h4 style="margin:0;">정리 질문 <span id="m3-step-label" style="font-size:0.78rem; font-weight:600; color:var(--text-sub); margin-left:6px;">1 / 3 — 촉매의 정의</span></h4>
+              <span style="font-size:0.78rem; font-weight:700; color:var(--text-sub);" id="m3-step-dots">● ○ ○</span>
+            </div>
+
+            <!-- STEP 1: 촉매의 정의 -->
+            <div id="m3-step-1">
+              <p style="margin:6px 0 10px; font-size:0.86rem; color:var(--text-main); font-weight:600; line-height:1.55;">
+                Q1. <strong>촉매(catalyst)</strong>란 무엇인가?
+              </p>
+              <div style="display:flex; flex-direction:column; gap:6px;">
+                <button class="m3-opt" data-q="1" data-i="0">① 반응에 참여하여 소모되는 물질</button>
+                <button class="m3-opt" data-q="1" data-i="1">② 반응 속도를 변화시키되, 자신은 변하지 않는 물질</button>
+                <button class="m3-opt" data-q="1" data-i="2">③ 반응물의 농도를 높이는 물질</button>
+                <button class="m3-opt" data-q="1" data-i="3">④ 생성물의 양을 증가시키는 물질</button>
+              </div>
+            </div>
+
+            <!-- STEP 2: 촉매와 활성화 에너지 -->
+            <div id="m3-step-2" style="display:none;">
+              <p style="margin:6px 0 10px; font-size:0.86rem; color:var(--text-main); font-weight:600; line-height:1.55;">
+                Q2. 촉매가 반응 속도를 높이는 <strong>원리</strong>로 가장 적절한 것은?
+              </p>
+              <div style="display:flex; flex-direction:column; gap:6px;">
+                <button class="m3-opt" data-q="2" data-i="0">① 반응물의 운동 에너지를 높이기 때문</button>
+                <button class="m3-opt" data-q="2" data-i="1">② 활성화 에너지가 낮은 새로운 반응 경로를 제공하기 때문</button>
+                <button class="m3-opt" data-q="2" data-i="2">③ 반응물의 농도를 증가시키기 때문</button>
+                <button class="m3-opt" data-q="2" data-i="3">④ 반응의 온도를 높이기 때문</button>
+              </div>
+            </div>
+
+            <!-- STEP 3: 결론 -->
+            <div id="m3-step-3" style="display:none;">
+              <p style="margin:6px 0 10px; font-size:0.86rem; color:var(--text-main); font-weight:600; line-height:1.55;">
+                Q3. KI 촉매를 첨가하면 H₂O₂ 분해 반응은 어떻게 변할까요?
+              </p>
+              <div style="display:flex; flex-direction:column; gap:6px;">
+                <button class="m3-opt" data-q="3" data-i="0">① 거품 발생이 빨라진다 (반응이 빨라진다)</button>
+                <button class="m3-opt" data-q="3" data-i="1">② 거품 발생이 느려진다 (반응이 느려진다)</button>
+                <button class="m3-opt" data-q="3" data-i="2">③ 변화 없다</button>
+              </div>
+            </div>
+
+            <div id="m3-quiz-msg" style="margin-top:10px; font-size:0.84rem; font-weight:600; min-height:18px;"></div>
           </div>
         </div>
       </div>
     </div>
+  </section>
+
   </section>
 </div>
 </div>
@@ -2183,79 +2283,411 @@ function renderM2Chart() {
 }
 renderM2Chart();
 
-/* ============ M3 촉매 ============ */
-let m3Catalyst = false;
-const m3Switch = document.getElementById('m3-switch');
+/* ============ M3 촉매 — 2개 비커 동시 ============ */
+const M3_DATA_ARR = [
+  { idx: 1, key: 'noCat', label: '촉매 없음', sublabel: 'H₂O₂만',    liquidColor: '#fce7f3', bubbleRate: 0.15, order: 2 },
+  { idx: 2, key: 'cat',   label: 'KI 촉매',   sublabel: 'H₂O₂ + KI', liquidColor: '#fef3c7', bubbleRate: 0.95, order: 1 },
+];
 const m3Sw = makeStopwatch(document.getElementById('m3-time'), document.getElementById('m3-stopwatch'));
-const m3LiquidA = document.getElementById('m3-liquidA');
-const m3LiquidB = document.getElementById('m3-liquidB');
-const m3BubblesA = document.getElementById('m3-bubblesA');
-const m3BubblesB = document.getElementById('m3-bubblesB');
+const m3Results = {};
 let m3Anim = null;
+let m3BubbleIntervals = [];
 
-m3Switch.addEventListener('click', () => {
-  m3Catalyst = !m3Catalyst;
-  m3Switch.classList.toggle('on', m3Catalyst);
-  m3LiquidB.setAttribute('fill', m3Catalyst ? '#fef3c7' : '#fce7f3');
+function buildM3Beakers() {
+  const wrap = document.getElementById('m3-beakers');
+  wrap.innerHTML = '';
+  M3_DATA_ARR.forEach(d => {
+    const col = document.createElement('div');
+    col.style.cssText = 'display:flex; flex-direction:column; align-items:center; gap:4px;';
+    col.innerHTML = `
+      <svg viewBox="0 0 140 230" width="140" height="220">
+        <!-- 주둥이 -->
+        <path d="M22 70 Q16 64 14 70" fill="none" stroke="#475569" stroke-width="2.4"
+              stroke-linecap="round" stroke-linejoin="round"/>
+        <!-- 본체 -->
+        <path d="M22 70 L22 208 Q22 216 30 216 L100 216 Q108 216 108 208 L108 70"
+              fill="none" stroke="#475569" stroke-width="2.4" stroke-linejoin="round"
+              stroke-linecap="round"/>
+        <line x1="22" y1="70" x2="108" y2="70" stroke="#475569" stroke-width="2.4"/>
+        <!-- 액체 -->
+        <rect id="m3-liquid-${d.idx}" x="24.5" y="130" width="83" height="84"
+              fill="${d.liquidColor}"/>
+        <!-- 거품 컨테이너 -->
+        <g id="m3-bubbles-${d.idx}"></g>
+        <!-- 눈금 -->
+        <g stroke="#94a3b8" stroke-width="1" font-size="7" fill="#94a3b8" font-weight="600">
+          <line x1="24.5" y1="100" x2="34" y2="100"/> <text x="37" y="103">80</text>
+          <line x1="24.5" y1="125" x2="34" y2="125"/> <text x="37" y="128">60</text>
+          <line x1="24.5" y1="150" x2="34" y2="150"/> <text x="37" y="153">40</text>
+          <line x1="24.5" y1="175" x2="34" y2="175"/> <text x="37" y="178">20</text>
+        </g>
+        <text x="65" y="64" text-anchor="middle" font-size="9" font-weight="700" fill="#475569">비커 ${d.idx}</text>
+      </svg>
+      <div style="font-weight:700; color:#0f172a; font-size:0.78rem;">${d.label}</div>
+      <div style="font-weight:500; color:#94a3b8; font-size:0.7rem;">${d.sublabel}</div>
+      <div id="m3-count-${d.idx}" style="font-weight:600; font-size:0.78rem; color:#94a3b8; font-variant-numeric:tabular-nums;">거품: —</div>
+    `;
+    wrap.appendChild(col);
+  });
+}
+buildM3Beakers();
+
+/* ----- 예측 문제 ----- */
+function buildM3Quiz() {
+  const wrap = document.getElementById('m3-quiz');
+  wrap.innerHTML = '';
+  M3_DATA_ARR.forEach(d => {
+    const row = document.createElement('div');
+    row.id = 'm3-quiz-row-' + d.idx;
+    row.style.cssText = 'display:flex; align-items:center; gap:6px; padding:8px 10px; background:#f8fafc; border:1.5px solid var(--border-color); border-radius:8px; transition: all 0.2s;';
+    row.innerHTML = `
+      <div style="font-weight:700; font-size:0.78rem; color:#0f172a; min-width:78px;">
+        비커 ${d.idx}<br>
+        <span style="font-weight:600; color:var(--text-sub); font-size:0.72rem;">${d.label}</span>
+      </div>
+      <div style="display:flex; align-items:center; gap:4px; font-size:0.75rem; color:var(--text-sub); font-weight:600;">
+        거품량 순위
+        <input type="number" min="1" max="2" data-idx="${d.idx}" data-kind="order"
+               style="width:56px; min-width:56px; padding:5px 7px; border:1.5px solid var(--border-color); border-radius:6px; font-family:inherit; font-weight:700; text-align:center; font-size:0.82rem; box-sizing:border-box;"
+               placeholder="1~2">
+      </div>
+    `;
+    wrap.appendChild(row);
+  });
+}
+buildM3Quiz();
+
+let m3PredictionSaved = false;
+let m3QuizStep = 1;
+const M3_QUIZ_ANSWERS = { 1: 1, 2: 1, 3: 0 };
+const M3_STEP_LABELS = {
+  1: '1 / 3 — 촉매의 정의',
+  2: '2 / 3 — 촉매와 활성화 에너지',
+  3: '3 / 3 — 결론',
+};
+const M3_STEP_DOTS = { 1: '● ○ ○', 2: '● ● ○', 3: '● ● ●' };
+
+function m3SetStartEnabled(on) {
+  document.getElementById('m3-start').disabled = !on;
+}
+function m3ShowStep(n) {
+  m3QuizStep = n;
+  [1,2,3].forEach(i => {
+    document.getElementById('m3-step-' + i).style.display = (i === n) ? 'block' : 'none';
+  });
+  document.getElementById('m3-step-label').textContent = M3_STEP_LABELS[n];
+  document.getElementById('m3-step-dots').textContent = M3_STEP_DOTS[n];
+  document.getElementById('m3-quiz-msg').textContent = '';
+}
+function m3SetMsg(text, ok) {
+  const msg = document.getElementById('m3-quiz-msg');
+  msg.textContent = text;
+  msg.style.color = ok ? '#047857' : '#b91c1c';
+}
+function m3SetPredictionMsg(text, ok) {
+  const msg = document.getElementById('m3-dilution-msg');
+  msg.textContent = text;
+  msg.style.color = ok ? '#047857' : '#b91c1c';
+}
+
+/* 예측 저장 (실험 후 결과 공개) */
+document.getElementById('m3-check').addEventListener('click', () => {
+  let anyEmpty = false;
+  M3_DATA_ARR.forEach(d => {
+    const row = document.getElementById('m3-quiz-row-' + d.idx);
+    if (row.querySelector('[data-kind="order"]').value === '') anyEmpty = true;
+  });
+  if (anyEmpty) { m3SetPredictionMsg('모든 칸을 입력해 주세요.', false); return; }
+  m3SetPredictionMsg('예측이 저장되었습니다. 실험 후 결과를 확인해 보세요.', true);
+  document.querySelectorAll('#m3-quiz input').forEach(i => i.disabled = true);
+  document.getElementById('m3-check').disabled = true;
+  m3PredictionSaved = true;
+  m3SetStartEnabled(true);
 });
 
-function spawnBubble(group, x) {
+function m3RevealPrediction() {
+  let allCorrect = true;
+  M3_DATA_ARR.forEach(d => {
+    const row = document.getElementById('m3-quiz-row-' + d.idx);
+    const val = parseInt(row.querySelector('[data-kind="order"]').value);
+    const ok = val === d.order;
+    if (ok) {
+      row.style.background = '#ecfdf5';
+      row.style.borderColor = '#10b981';
+    } else {
+      row.style.background = '#fef2f2';
+      row.style.borderColor = '#ef4444';
+      allCorrect = false;
+    }
+  });
+  if (allCorrect) {
+    m3SetPredictionMsg('예측이 모두 맞았습니다!', true);
+  } else {
+    m3SetPredictionMsg('예측과 다른 결과가 있습니다. 촉매가 반응 속도를 높입니다.', false);
+  }
+}
+
+document.querySelectorAll('.m3-opt').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const q = parseInt(btn.dataset.q);
+    const i = parseInt(btn.dataset.i);
+    const correct = M3_QUIZ_ANSWERS[q];
+    if (i === correct) {
+      btn.classList.add('correct');
+      document.querySelectorAll(`.m3-opt[data-q="${q}"]`).forEach(b => b.disabled = true);
+      if (q === 1) {
+        m3SetMsg('정답! 다음 문제로 넘어갑니다...', true);
+        setTimeout(() => m3ShowStep(2), 800);
+      } else if (q === 2) {
+        m3SetMsg('정답! 다음 문제로 넘어갑니다...', true);
+        setTimeout(() => m3ShowStep(3), 800);
+      } else if (q === 3) {
+        m3SetMsg('모든 정리 질문을 통과했습니다! 수고하셨습니다.', true);
+      }
+    } else {
+      btn.classList.add('wrong');
+      btn.disabled = true;
+      m3SetMsg('다시 생각해 보세요.', false);
+    }
+  });
+});
+
+function m3ResetQuiz() {
+  m3PredictionSaved = false;
+  m3SetStartEnabled(false);
+  m3SetPredictionMsg('', true);
+  document.getElementById('m3-check').disabled = false;
+  M3_DATA_ARR.forEach(d => {
+    const row = document.getElementById('m3-quiz-row-' + d.idx);
+    row.style.background = '#f8fafc';
+    row.style.borderColor = 'var(--border-color)';
+    row.querySelectorAll('input').forEach(i => { i.disabled = false; i.value = ''; });
+  });
+  document.querySelectorAll('.m3-opt').forEach(b => {
+    b.classList.remove('correct', 'wrong');
+    b.disabled = false;
+  });
+  m3ShowStep(1);
+}
+
+function m3SpawnBubble(group) {
   const b = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-  b.setAttribute('cx', x);
-  b.setAttribute('cy', 200);
+  b.setAttribute('cx', 30 + Math.random() * 70);
+  b.setAttribute('cy', 210);
   b.setAttribute('r', 2 + Math.random() * 3);
   b.setAttribute('fill', '#bae6fd');
   b.setAttribute('opacity', '0.85');
   group.appendChild(b);
-  let y = 200;
+  let y = 210;
   const speed = 0.5 + Math.random() * 0.7;
   const id = setInterval(() => {
     y -= speed;
     b.setAttribute('cy', y);
-    if (y < 125) { clearInterval(id); b.remove(); }
+    if (y < 135) { clearInterval(id); b.remove(); }
   }, 30);
+  m3BubbleIntervals.push(id);
+}
+
+function m3ResetAll() {
+  if (m3Anim) { clearInterval(m3Anim); m3Anim = null; }
+  m3BubbleIntervals.forEach(id => clearInterval(id));
+  m3BubbleIntervals = [];
+  M3_DATA_ARR.forEach(d => {
+    const bubbles = document.getElementById('m3-bubbles-' + d.idx);
+    if (bubbles) bubbles.innerHTML = '';
+    document.getElementById('m3-count-' + d.idx).textContent = '거품: —';
+    document.getElementById('m3-count-' + d.idx).style.color = '#94a3b8';
+  });
+  m3Sw.reset();
 }
 
 document.getElementById('m3-start').addEventListener('click', () => {
-  if (m3Anim) clearInterval(m3Anim);
-  m3BubblesA.innerHTML = '';
-  m3BubblesB.innerHTML = '';
-  m3Sw.reset();
+  m3ResetAll();
   m3Sw.start();
-  let countA = 0, countB = 0;
+  const counts = { 1: 0, 2: 0 };
   const startT = performance.now();
   m3Anim = setInterval(() => {
-    if (Math.random() < 0.15) { spawnBubble(m3BubblesA, 30 + Math.random() * 60); countA++; }
-    const bRate = m3Catalyst ? 0.95 : 0.15;
-    if (Math.random() < bRate) { spawnBubble(m3BubblesB, 30 + Math.random() * 60); countB++; }
+    M3_DATA_ARR.forEach(d => {
+      if (Math.random() < d.bubbleRate) {
+        const group = document.getElementById('m3-bubbles-' + d.idx);
+        m3SpawnBubble(group);
+        counts[d.idx]++;
+      }
+    });
     if (performance.now() - startT > 12000) {
       clearInterval(m3Anim);
+      m3Anim = null;
       m3Sw.stop(12);
-      document.getElementById('m3-resultA').textContent = countA;
-      document.getElementById('m3-resultB').textContent = countB;
+      M3_DATA_ARR.forEach(d => {
+        const el = document.getElementById('m3-count-' + d.idx);
+        el.textContent = '거품: ' + counts[d.idx];
+        el.style.color = '#0f172a';
+        m3Results[d.key] = counts[d.idx];
+      });
+      renderM3Chart();
+      m3RevealPrediction();
+      document.getElementById('m3-next-wrap').style.display = 'block';
     }
   }, 80);
 });
 
-document.getElementById('m3-reset').addEventListener('click', () => {
-  if (m3Anim) clearInterval(m3Anim);
-  m3BubblesA.innerHTML = '';
-  m3BubblesB.innerHTML = '';
-  m3Sw.reset();
-  document.getElementById('m3-resultA').textContent = '—';
-  document.getElementById('m3-resultB').textContent = '—';
+/* ----- 뷰 전환 + 활성화 에너지 시뮬레이션 ----- */
+document.getElementById('m3-next').addEventListener('click', () => {
+  document.getElementById('m3-main-view').style.display = 'none';
+  document.getElementById('m3-analysis-view').style.display = 'block';
+  startM3CollisionSim();
+});
+document.getElementById('m3-back-to-lab').addEventListener('click', () => {
+  stopM3CollisionSim();
+  document.getElementById('m3-analysis-view').style.display = 'none';
+  document.getElementById('m3-main-view').style.display = 'block';
 });
 
-/* ============ Review questions ============ */
-document.querySelectorAll('.review-options').forEach(group => {
-  const correct = parseInt(group.dataset.correct);
-  group.querySelectorAll('button').forEach((btn, i) => {
-    btn.addEventListener('click', () => {
-      group.querySelectorAll('button').forEach(b => b.classList.remove('correct', 'wrong'));
-      btn.classList.add(i === correct ? 'correct' : 'wrong');
-    });
+const M3_PARTICLES = [
+  { idx: 1, label: '촉매 없음 (높은 Ea)', yellow: 3, purple: 3, speedMult: 0.7, effectiveProb: 0.06 },
+  { idx: 2, label: 'KI 촉매 (낮은 Ea)',   yellow: 3, purple: 3, speedMult: 0.7, effectiveProb: 0.50 },
+];
+const M3_COLL_W = 180, M3_COLL_H = 150;
+let m3CollisionAnimId = null;
+let m3CollisionState = [];
+
+function buildM3CollisionBoxes() {
+  const wrap = document.getElementById('m3-collision-boxes');
+  wrap.innerHTML = '';
+  m3CollisionState = [];
+  M3_PARTICLES.forEach(d => {
+    const box = document.createElement('div');
+    box.style.cssText = 'background:#f1f5f9; border:1.5px solid var(--border-color); border-radius:12px; padding:10px; display:flex; flex-direction:column; align-items:center; gap:6px;';
+    box.innerHTML = `
+      <div style="font-weight:700; font-size:0.78rem; color:#0f172a;">${d.label}</div>
+      <svg id="m3-coll-svg-${d.idx}" viewBox="0 0 ${M3_COLL_W} ${M3_COLL_H}" width="100%" style="background:linear-gradient(180deg,#fdf2f8,#fce7f3); border-radius:8px; max-width:220px;"></svg>
+      <div style="font-weight:600; font-size:0.74rem; color:var(--text-sub);">
+        유효 충돌 <span id="m3-coll-count-${d.idx}" style="font-weight:800; color:#4f46e5; font-variant-numeric:tabular-nums;">0</span>
+      </div>
+    `;
+    wrap.appendChild(box);
+    const particles = [];
+    for (let i = 0; i < d.yellow; i++) particles.push(makeM3Particle('yellow', d.speedMult));
+    for (let i = 0; i < d.purple; i++) particles.push(makeM3Particle('purple', d.speedMult));
+    m3CollisionState.push({ idx: d.idx, particles, count: 0, lastHit: new Map(), effectiveProb: d.effectiveProb });
   });
+}
+
+function makeM3Particle(type, speedMult) {
+  const angle = Math.random() * Math.PI * 2;
+  const speed = (0.7 + Math.random() * 0.4) * speedMult;
+  return {
+    type,
+    x: 20 + Math.random() * (M3_COLL_W - 40),
+    y: 20 + Math.random() * (M3_COLL_H - 40),
+    vx: Math.cos(angle) * speed,
+    vy: Math.sin(angle) * speed,
+    r: 9,
+  };
+}
+
+function renderM3CollisionBox(state) {
+  const svg = document.getElementById('m3-coll-svg-' + state.idx);
+  let html = '';
+  state.particles.forEach(p => {
+    const fill = p.type === 'yellow'
+      ? 'url(#m3-grad-y-' + state.idx + ')'
+      : 'url(#m3-grad-p-' + state.idx + ')';
+    html += `<circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="${p.r}" fill="${fill}" stroke="#1e293b" stroke-width="0.8"/>`;
+  });
+  svg.innerHTML = `
+    <defs>
+      <radialGradient id="m3-grad-y-${state.idx}" cx="35%" cy="35%">
+        <stop offset="0%" stop-color="#fef9c3"/>
+        <stop offset="60%" stop-color="#facc15"/>
+        <stop offset="100%" stop-color="#a16207"/>
+      </radialGradient>
+      <radialGradient id="m3-grad-p-${state.idx}" cx="35%" cy="35%">
+        <stop offset="0%" stop-color="#e9d5ff"/>
+        <stop offset="60%" stop-color="#a855f7"/>
+        <stop offset="100%" stop-color="#581c87"/>
+      </radialGradient>
+    </defs>
+    ${html}
+  `;
+}
+
+function tickM3Collision() {
+  m3CollisionState.forEach(state => {
+    state.particles.forEach(p => {
+      p.x += p.vx; p.y += p.vy;
+      if (p.x < p.r) { p.x = p.r; p.vx = -p.vx; }
+      if (p.x > M3_COLL_W - p.r) { p.x = M3_COLL_W - p.r; p.vx = -p.vx; }
+      if (p.y < p.r) { p.y = p.r; p.vy = -p.vy; }
+      if (p.y > M3_COLL_H - p.r) { p.y = M3_COLL_H - p.r; p.vy = -p.vy; }
+    });
+    const ps = state.particles;
+    for (let i = 0; i < ps.length; i++) {
+      for (let j = i + 1; j < ps.length; j++) {
+        if (ps[i].type === ps[j].type) continue;
+        const dx = ps[i].x - ps[j].x, dy = ps[i].y - ps[j].y;
+        const d2 = dx * dx + dy * dy;
+        const rsum = ps[i].r + ps[j].r;
+        const key = i + '-' + j;
+        if (d2 < rsum * rsum) {
+          if (!state.lastHit.get(key)) {
+            if (Math.random() < state.effectiveProb) {
+              state.count++;
+              document.getElementById('m3-coll-count-' + state.idx).textContent = state.count;
+            }
+            const tmpVx = ps[i].vx, tmpVy = ps[i].vy;
+            ps[i].vx = ps[j].vx; ps[i].vy = ps[j].vy;
+            ps[j].vx = tmpVx; ps[j].vy = tmpVy;
+            state.lastHit.set(key, true);
+          }
+        } else {
+          state.lastHit.set(key, false);
+        }
+      }
+    }
+    renderM3CollisionBox(state);
+  });
+  m3CollisionAnimId = requestAnimationFrame(tickM3Collision);
+}
+
+function startM3CollisionSim() {
+  buildM3CollisionBoxes();
+  m3CollisionState.forEach(renderM3CollisionBox);
+  if (m3CollisionAnimId) cancelAnimationFrame(m3CollisionAnimId);
+  m3CollisionAnimId = requestAnimationFrame(tickM3Collision);
+}
+function stopM3CollisionSim() {
+  if (m3CollisionAnimId) cancelAnimationFrame(m3CollisionAnimId);
+  m3CollisionAnimId = null;
+}
+
+document.getElementById('m3-reset').addEventListener('click', () => {
+  m3ResetAll();
+  m3ResetQuiz();
+  Object.keys(m3Results).forEach(k => delete m3Results[k]);
+  renderM3Chart();
+  document.getElementById('m3-next-wrap').style.display = 'none';
+  stopM3CollisionSim();
+  document.getElementById('m3-analysis-view').style.display = 'none';
+  document.getElementById('m3-main-view').style.display = 'block';
 });
+
+function renderM3Chart() {
+  const chart = document.getElementById('m3-chart');
+  chart.innerHTML = '';
+  const max = Math.max(1, ...Object.values(m3Results), 50);
+  M3_DATA_ARR.forEach(d => {
+    const bar = document.createElement('div');
+    bar.className = 'bar';
+    const v = m3Results[d.key];
+    bar.style.height = v != null ? (v / max * 100) + '%' : '4px';
+    bar.style.opacity = v != null ? '1' : '0.25';
+    bar.innerHTML = `<span class="bar-label">${v != null ? v : '–'}</span>
+                     <span class="bar-tag">${d.label}</span>`;
+    chart.appendChild(bar);
+  });
+}
+renderM3Chart();
 </script>
 </body>
 </html>
