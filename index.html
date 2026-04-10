@@ -964,7 +964,7 @@
           <p style="margin:0 0 8px; font-weight:500; color:var(--text-main); font-size:0.9rem; line-height:1.6;">
             동일한 농도의 KIO₃ + NaHSO₃ + 녹말 반응을<br><strong>3가지 온도 조건</strong>에서 동시에 비교합니다.
           </p>
-          <small class="thin">얼음물(0℃) · 실온(25℃) · 뜨거운물(60℃) · KIO₃ 0.05 M</small>
+          <small class="thin">얼음물(0℃) · 실온(25℃) · 뜨거운물(60℃)</small>
         </div>
 
         <div class="panel-section">
@@ -1703,31 +1703,34 @@ function buildM2Beakers() {
     /* 온도별 수조 추가 요소 */
     let bathExtra = '';
     if (d.key === 'ice') {
-      /* 얼음 조각들 */
+      /* 얼음 조각들 (수면 근처 + 수조 안쪽 곳곳) */
       bathExtra = `
-        <rect x="12" y="108" width="10" height="8" rx="2" fill="rgba(255,255,255,0.85)" stroke="#94a3b8" stroke-width="0.6" transform="rotate(-12 17 112)"/>
-        <rect x="28" y="102" width="9" height="7" rx="2" fill="rgba(255,255,255,0.9)" stroke="#94a3b8" stroke-width="0.6" transform="rotate(8 32 106)"/>
-        <rect x="105" y="105" width="11" height="8" rx="2" fill="rgba(255,255,255,0.85)" stroke="#94a3b8" stroke-width="0.6" transform="rotate(-6 110 109)"/>
-        <rect x="118" y="110" width="8" height="7" rx="2" fill="rgba(255,255,255,0.9)" stroke="#94a3b8" stroke-width="0.6" transform="rotate(15 122 113)"/>
-        <rect x="14" y="200" width="9" height="7" rx="2" fill="rgba(255,255,255,0.8)" stroke="#94a3b8" stroke-width="0.6" transform="rotate(10 18 203)"/>
-        <rect x="112" y="195" width="10" height="7" rx="2" fill="rgba(255,255,255,0.85)" stroke="#94a3b8" stroke-width="0.6" transform="rotate(-8 117 198)"/>
+        <rect x="10" y="106" width="11" height="8" rx="2" fill="rgba(255,255,255,0.85)" stroke="#94a3b8" stroke-width="0.6" transform="rotate(-12 15 110)"/>
+        <rect x="26" y="102" width="9" height="7" rx="2" fill="rgba(255,255,255,0.9)" stroke="#94a3b8" stroke-width="0.6" transform="rotate(8 30 106)"/>
+        <rect x="8" y="115" width="8" height="6" rx="1.5" fill="rgba(255,255,255,0.8)" stroke="#94a3b8" stroke-width="0.5" transform="rotate(18 12 118)"/>
+        <rect x="105" y="104" width="11" height="8" rx="2" fill="rgba(255,255,255,0.85)" stroke="#94a3b8" stroke-width="0.6" transform="rotate(-6 110 108)"/>
+        <rect x="120" y="109" width="9" height="7" rx="2" fill="rgba(255,255,255,0.9)" stroke="#94a3b8" stroke-width="0.6" transform="rotate(15 124 112)"/>
+        <rect x="112" y="118" width="7" height="6" rx="1.5" fill="rgba(255,255,255,0.8)" stroke="#94a3b8" stroke-width="0.5" transform="rotate(-10 115 121)"/>
+        <rect x="12" y="170" width="10" height="7" rx="2" fill="rgba(255,255,255,0.8)" stroke="#94a3b8" stroke-width="0.6" transform="rotate(5 17 173)"/>
+        <rect x="14" y="200" width="9" height="7" rx="2" fill="rgba(255,255,255,0.75)" stroke="#94a3b8" stroke-width="0.5" transform="rotate(10 18 203)"/>
+        <rect x="112" y="175" width="9" height="7" rx="2" fill="rgba(255,255,255,0.8)" stroke="#94a3b8" stroke-width="0.6" transform="rotate(-8 116 178)"/>
+        <rect x="116" y="198" width="8" height="6" rx="1.5" fill="rgba(255,255,255,0.75)" stroke="#94a3b8" stroke-width="0.5" transform="rotate(12 120 201)"/>
       `;
     } else if (d.key === 'hot') {
-      /* 가열교반기 (핫플레이트 스터러) */
+      /* 가열교반기 (핫플레이트 스터러) — 수조 아래 */
       bathExtra = `
-        <rect x="2" y="238" width="136" height="22" rx="4" fill="#e2e8f0" stroke="#475569" stroke-width="1.5"/>
-        <rect x="6" y="240" width="128" height="18" rx="3" fill="linear-gradient(180deg,#f8fafc,#e2e8f0)" />
-        <rect x="6" y="240" width="128" height="18" rx="3" fill="#f1f5f9" stroke="none"/>
-        <circle cx="40" cy="249" r="5" fill="none" stroke="#94a3b8" stroke-width="1.2"/>
-        <circle cx="40" cy="249" r="2" fill="#ef4444"/>
-        <rect x="90" y="245" width="20" height="8" rx="3" fill="#cbd5e1" stroke="#94a3b8" stroke-width="0.8"/>
-        <text x="100" y="251" text-anchor="middle" font-size="4.5" font-weight="700" fill="#475569">HEAT</text>
-        <text x="40" y="258" text-anchor="middle" font-size="3.5" font-weight="600" fill="#94a3b8">STIR</text>
+        <rect x="2" y="240" width="136" height="22" rx="4" fill="#e2e8f0" stroke="#475569" stroke-width="1.5"/>
+        <rect x="6" y="242" width="128" height="18" rx="3" fill="#f1f5f9" stroke="none"/>
+        <circle cx="40" cy="251" r="5" fill="none" stroke="#94a3b8" stroke-width="1.2"/>
+        <circle cx="40" cy="251" r="2" fill="#ef4444"/>
+        <rect x="90" y="247" width="20" height="8" rx="3" fill="#cbd5e1" stroke="#94a3b8" stroke-width="0.8"/>
+        <text x="100" y="253" text-anchor="middle" font-size="4.5" font-weight="700" fill="#475569">HEAT</text>
+        <text x="40" y="260" text-anchor="middle" font-size="3.5" font-weight="600" fill="#94a3b8">STIR</text>
       `;
     }
 
     col.innerHTML = `
-      <svg viewBox="0 0 140 ${d.key === 'hot' ? 265 : 240}" width="160" height="${d.key === 'hot' ? 265 : 240}">
+      <svg viewBox="0 0 140 265" width="160" height="265">
         <!-- ===== 붓는 비커 ===== -->
         <g id="m2-pour-src-${d.idx}" opacity="0" style="transition: opacity 0.5s ease;">
           <g transform="translate(38 -8) rotate(-65 60 25)">
