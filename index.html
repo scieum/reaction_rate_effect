@@ -732,8 +732,8 @@
     background: transparent;
     position: relative;
   }
-  #screen-lab2 .lab-bench svg { width: 130px !important; height: 215px !important; }
-  #screen-lab2 #m2-beakers { gap: 14px !important; }
+  #screen-lab2 .lab-bench svg { width: 160px !important; height: 270px !important; }
+  #screen-lab2 #m2-beakers { gap: 32px !important; }
   #screen-lab2 #m2-beakers > div > div:nth-child(2) { font-size: 0.72rem !important; }
   #screen-lab2 #m2-beakers > div > div:nth-child(3) { font-size: 0.62rem !important; }
   #screen-lab2 #m2-beakers > div > div:nth-child(4) { font-size: 0.72rem !important; }
@@ -1699,8 +1699,35 @@ function buildM2Beakers() {
   M2_DATA_ARR.forEach(d => {
     const col = document.createElement('div');
     col.style.cssText = 'display:flex; flex-direction:column; align-items:center; gap:4px;';
+
+    /* 온도별 수조 추가 요소 */
+    let bathExtra = '';
+    if (d.key === 'ice') {
+      /* 얼음 조각들 */
+      bathExtra = `
+        <rect x="12" y="108" width="10" height="8" rx="2" fill="rgba(255,255,255,0.85)" stroke="#94a3b8" stroke-width="0.6" transform="rotate(-12 17 112)"/>
+        <rect x="28" y="102" width="9" height="7" rx="2" fill="rgba(255,255,255,0.9)" stroke="#94a3b8" stroke-width="0.6" transform="rotate(8 32 106)"/>
+        <rect x="105" y="105" width="11" height="8" rx="2" fill="rgba(255,255,255,0.85)" stroke="#94a3b8" stroke-width="0.6" transform="rotate(-6 110 109)"/>
+        <rect x="118" y="110" width="8" height="7" rx="2" fill="rgba(255,255,255,0.9)" stroke="#94a3b8" stroke-width="0.6" transform="rotate(15 122 113)"/>
+        <rect x="14" y="200" width="9" height="7" rx="2" fill="rgba(255,255,255,0.8)" stroke="#94a3b8" stroke-width="0.6" transform="rotate(10 18 203)"/>
+        <rect x="112" y="195" width="10" height="7" rx="2" fill="rgba(255,255,255,0.85)" stroke="#94a3b8" stroke-width="0.6" transform="rotate(-8 117 198)"/>
+      `;
+    } else if (d.key === 'hot') {
+      /* 가열교반기 (핫플레이트 스터러) */
+      bathExtra = `
+        <rect x="2" y="238" width="136" height="22" rx="4" fill="#e2e8f0" stroke="#475569" stroke-width="1.5"/>
+        <rect x="6" y="240" width="128" height="18" rx="3" fill="linear-gradient(180deg,#f8fafc,#e2e8f0)" />
+        <rect x="6" y="240" width="128" height="18" rx="3" fill="#f1f5f9" stroke="none"/>
+        <circle cx="40" cy="249" r="5" fill="none" stroke="#94a3b8" stroke-width="1.2"/>
+        <circle cx="40" cy="249" r="2" fill="#ef4444"/>
+        <rect x="90" y="245" width="20" height="8" rx="3" fill="#cbd5e1" stroke="#94a3b8" stroke-width="0.8"/>
+        <text x="100" y="251" text-anchor="middle" font-size="4.5" font-weight="700" fill="#475569">HEAT</text>
+        <text x="40" y="258" text-anchor="middle" font-size="3.5" font-weight="600" fill="#94a3b8">STIR</text>
+      `;
+    }
+
     col.innerHTML = `
-      <svg viewBox="0 0 140 230" width="120" height="195">
+      <svg viewBox="0 0 140 ${d.key === 'hot' ? 265 : 240}" width="160" height="${d.key === 'hot' ? 265 : 240}">
         <!-- ===== 붓는 비커 ===== -->
         <g id="m2-pour-src-${d.idx}" opacity="0" style="transition: opacity 0.5s ease;">
           <g transform="translate(38 -8) rotate(-65 60 25)">
@@ -1723,34 +1750,41 @@ function buildM2Beakers() {
         <rect id="m2-stream-${d.idx}" x="73" y="36" width="3" height="0"
               fill="rgba(125,211,252,0.75)" opacity="0"/>
 
-        <!-- ===== 수조 (water bath) ===== -->
-        <rect id="m2-bath-${d.idx}" x="6" y="80" width="128" height="146" rx="6"
-              fill="${d.bathColor}" stroke="#475569" stroke-width="1.8"/>
+        <!-- ===== 수조 외벽 ===== -->
+        <rect x="2" y="76" width="136" height="162" rx="5"
+              fill="none" stroke="#475569" stroke-width="2"/>
+        <!-- ===== 수조 물 (4/5 채움) ===== -->
+        <rect x="4" y="108" width="132" height="128" rx="3"
+              fill="rgba(186,230,253,0.45)"/>
+        <!-- 수면 라인 -->
+        <line x1="4" y1="108" x2="136" y2="108" stroke="rgba(56,189,248,0.4)" stroke-width="0.8"/>
+
+        ${bathExtra}
 
         <!-- ===== 비커 내부 채움 (수조 색 가리기) ===== -->
-        <path d="M22 70 L22 208 Q22 216 30 216 L100 216 Q108 216 108 208 L108 70 Z"
+        <path d="M22 70 L22 220 Q22 228 30 228 L100 228 Q108 228 108 220 L108 70 Z"
               fill="white" stroke="none"/>
 
         <!-- ===== 메인 비커 ===== -->
         <path d="M22 70 Q16 64 14 70" fill="none" stroke="#475569" stroke-width="2.4"
               stroke-linecap="round" stroke-linejoin="round"/>
-        <path d="M22 70 L22 208 Q22 216 30 216 L100 216 Q108 216 108 208 L108 70"
+        <path d="M22 70 L22 220 Q22 228 30 228 L100 228 Q108 228 108 220 L108 70"
               fill="none" stroke="#475569" stroke-width="2.4" stroke-linejoin="round"
               stroke-linecap="round"/>
         <line x1="22" y1="70" x2="108" y2="70" stroke="#475569" stroke-width="2.4"/>
-        <!-- 액체 -->
-        <rect id="m2-liquid-${d.idx}" x="24.5" y="152" width="83" height="62"
-              fill="rgba(241,245,249,0.35)" style="transition: y 1.2s ease, height 1.2s ease;"/>
+        <!-- 액체 (연한 색) -->
+        <rect id="m2-liquid-${d.idx}" x="24.5" y="165" width="83" height="61"
+              fill="rgba(219,234,254,0.4)" style="transition: y 1.2s ease, height 1.2s ease;"/>
         <!-- 눈금 -->
         <g stroke="#94a3b8" stroke-width="1" font-size="7" fill="#94a3b8" font-weight="600">
-          <line x1="24.5" y1="115" x2="34" y2="115"/> <text x="37" y="118">80</text>
-          <line x1="24.5" y1="140" x2="34" y2="140"/> <text x="37" y="143">60</text>
-          <line x1="24.5" y1="165" x2="34" y2="165"/> <text x="37" y="168">40</text>
-          <line x1="24.5" y1="190" x2="34" y2="190"/> <text x="37" y="193">20</text>
+          <line x1="24.5" y1="120" x2="34" y2="120"/> <text x="37" y="123">80</text>
+          <line x1="24.5" y1="145" x2="34" y2="145"/> <text x="37" y="148">60</text>
+          <line x1="24.5" y1="170" x2="34" y2="170"/> <text x="37" y="173">40</text>
+          <line x1="24.5" y1="195" x2="34" y2="195"/> <text x="37" y="198">20</text>
         </g>
         <text x="65" y="64" text-anchor="middle" font-size="9" font-weight="700" fill="#475569">비커 ${d.idx}</text>
-        <!-- 수조 온도 -->
-        <text x="70" y="222" text-anchor="middle" font-size="7" font-weight="700" fill="#475569">${d.temp}&#8451; 수조</text>
+        <!-- 수조 라벨 -->
+        <text x="70" y="93" text-anchor="middle" font-size="7.5" font-weight="700" fill="#475569">${d.label} (${d.temp}&#8451;)</text>
       </svg>
       <div style="font-weight:700; color:#0f172a; font-size:0.78rem; font-variant-numeric:tabular-nums;">${d.label} (${d.temp}℃)</div>
       <div style="font-weight:500; color:#94a3b8; font-size:0.7rem;">KIO₃ 0.05 M · 50 mL</div>
@@ -1908,9 +1942,9 @@ function m2ResetAll() {
   M2_DATA_ARR.forEach(d => {
     const liq = document.getElementById('m2-liquid-' + d.idx);
     liq.style.transition = 'none';
-    liq.setAttribute('fill', 'rgba(241,245,249,0.35)');
-    liq.setAttribute('y', '152');
-    liq.setAttribute('height', '62');
+    liq.setAttribute('fill', 'rgba(219,234,254,0.4)');
+    liq.setAttribute('y', '165');
+    liq.setAttribute('height', '61');
     const src = document.getElementById('m2-pour-src-' + d.idx);
     src.style.transition = 'none';
     src.setAttribute('opacity', '0');
@@ -1946,8 +1980,8 @@ document.getElementById('m2-start').addEventListener('click', () => {
     }, 350));
     m2Timers.push(setTimeout(() => {
       liq.style.transition = 'y 1.1s ease, height 1.1s ease';
-      liq.setAttribute('y', '115');
-      liq.setAttribute('height', '99');
+      liq.setAttribute('y', '125');
+      liq.setAttribute('height', '101');
     }, 450));
     m2Timers.push(setTimeout(() => {
       stream.style.transition = 'opacity 0.3s ease';
