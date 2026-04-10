@@ -832,6 +832,13 @@
       grid-template-columns: repeat(2, 1fr) !important;
     }
   }
+
+  /* ====== 뷰포트 맞춤 줌 ====== */
+  #screen-lab1 .app,
+  #screen-lab2 .app,
+  #screen-lab3 .app {
+    zoom: var(--lab-zoom, 1);
+  }
 </style>
 </head>
 <body>
@@ -1305,7 +1312,27 @@ function navigateTo(id) {
   const target = id === 'home' ? 'screen-home' : 'screen-' + id;
   document.getElementById(target).classList.add('active');
   window.scrollTo({ top: 0, behavior: 'instant' });
+  adjustLabZoom();
 }
+
+/* ============ 뷰포트 맞춤 줌 ============ */
+function adjustLabZoom() {
+  const vw = window.innerWidth;
+  const vh = window.innerHeight;
+  let zoom;
+  if (vw <= 860) {
+    // 모바일: 가로 기준 스케일링, 세로 스크롤 허용
+    zoom = vw / 420;
+  } else {
+    // 데스크탑: 가로·세로 모두 고려하여 화면에 맞춤
+    const zoomW = vw / 1360;
+    const zoomH = vh / 840;
+    zoom = Math.min(zoomW, zoomH);
+  }
+  document.documentElement.style.setProperty('--lab-zoom', Math.max(0.55, Math.min(zoom, 1.8)));
+}
+window.addEventListener('resize', adjustLabZoom);
+adjustLabZoom();
 
 /* ============ Stopwatch helper ============ */
 function fmtTime(sec) {
