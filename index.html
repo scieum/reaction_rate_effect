@@ -797,6 +797,41 @@
   #screen-lab3 .bar-chart { height: 90px; gap: 10px; margin-top: 8px; }
   #screen-lab3 #m3-next-wrap { margin-top: 10px !important; }
   #screen-lab3 #m3-next { padding: 9px 18px !important; font-size: 0.84rem; }
+
+  /* ====== 모바일 세로 모드 ====== */
+  @media (max-width: 860px) {
+    #screen-lab1 .module-grid,
+    #screen-lab2 .module-grid,
+    #screen-lab3 .module-grid {
+      grid-template-columns: 1fr;
+    }
+    #screen-lab1 .app,
+    #screen-lab2 .app,
+    #screen-lab3 .app {
+      padding: 12px 10px 24px;
+    }
+    #screen-lab1 .lab-bench svg,
+    #screen-lab2 .lab-bench svg {
+      width: 100px !important;
+      height: 170px !important;
+    }
+    #screen-lab2 .lab-bench svg {
+      width: 120px !important;
+      height: 200px !important;
+    }
+    #screen-lab3 .lab-bench svg {
+      width: 120px !important;
+      height: 190px !important;
+    }
+    #screen-lab1 #m1-beakers,
+    #screen-lab2 #m2-beakers,
+    #screen-lab3 #m3-beakers {
+      gap: 8px !important;
+    }
+    #m1-collision-boxes {
+      grid-template-columns: repeat(2, 1fr) !important;
+    }
+  }
 </style>
 </head>
 <body>
