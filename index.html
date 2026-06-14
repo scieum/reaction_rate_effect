@@ -1357,6 +1357,7 @@
             <button>② 반응에 직접 참여하여 소모된다</button>
             <button>③ 반응을 억제하여 거품 발생을 막는다</button>
           </div>
+          <div class="review-msg" style="margin-top:10px; font-size:0.84rem; font-weight:600; min-height:18px;"></div>
         </div>
       </div>
       </div>
@@ -2718,10 +2719,16 @@ document.getElementById('m3-back-to-lab').addEventListener('click', () => {
 /* ============ Review questions ============ */
 document.querySelectorAll('.review-options').forEach(group => {
   const correct = parseInt(group.dataset.correct);
+  const msg = group.parentElement.querySelector('.review-msg');
   group.querySelectorAll('button').forEach((btn, i) => {
     btn.addEventListener('click', () => {
       group.querySelectorAll('button').forEach(b => b.classList.remove('correct', 'wrong'));
-      btn.classList.add(i === correct ? 'correct' : 'wrong');
+      const isCorrect = i === correct;
+      btn.classList.add(isCorrect ? 'correct' : 'wrong');
+      if (msg) {
+        msg.textContent = isCorrect ? 'O 정답입니다.' : 'X 다시 생각해보세요.';
+        msg.style.color = isCorrect ? '#047857' : '#b91c1c';
+      }
     });
   });
 });
