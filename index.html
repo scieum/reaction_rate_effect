@@ -358,6 +358,51 @@
     font-weight: 600;
   }
 
+  /* 예측 결과 팝업 */
+  .result-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+  .result-modal-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.55);
+    backdrop-filter: blur(3px);
+    -webkit-backdrop-filter: blur(3px);
+  }
+  .result-modal-card {
+    position: relative;
+    background: white;
+    border-radius: 16px;
+    padding: 24px 26px;
+    max-width: 400px;
+    width: 100%;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25);
+    text-align: center;
+  }
+  .result-modal-card h3 { margin: 0 0 4px; font-size: 1.3rem; }
+  .result-modal-card .result-sub { margin: 0 0 16px; font-size: 0.88rem; font-weight: 600; }
+  .result-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 9px 12px;
+    border-radius: 8px;
+    border: 1.5px solid var(--border-color);
+    margin-bottom: 6px;
+    font-size: 0.84rem;
+  }
+  .result-row .r-name { font-weight: 700; color: #0f172a; }
+  .result-row .r-detail { font-weight: 600; color: var(--text-sub); font-variant-numeric: tabular-nums; }
+  .result-row .r-mark { font-weight: 800; }
+  .result-modal-card button { margin-top: 16px; }
+
   /* Module tab content */
   .module { display: none; }
   .module.active { display: block; }
@@ -1366,6 +1411,17 @@
 </div>
 </div>
 
+<!-- ===== Lab 2 예측 결과 팝업 ===== -->
+<div id="m2-result-modal" class="result-modal" style="display:none;">
+  <div class="result-modal-backdrop"></div>
+  <div class="result-modal-card fade-in">
+    <h3 id="m2-result-title">예측 결과</h3>
+    <p class="result-sub" id="m2-result-sub"></p>
+    <div id="m2-result-list"></div>
+    <button class="btn-press" id="m2-result-close">확인</button>
+  </div>
+</div>
+
 <script>
 /* ============ Screen navigation ============ */
 function navigateTo(id) {
@@ -2128,7 +2184,47 @@ function m2RevealPrediction() {
   } else {
     m2SetPredictionMsg('예측과 다른 결과가 있습니다. 온도가 높을수록 반응이 빨라집니다.', false);
   }
+  m2ShowResultModal(allCorrect);
 }
+
+/* 시뮬레이션 종료 후 예측 결과 팝업 */
+function m2ShowResultModal(allCorrect) {
+  const list = document.getElementById('m2-result-list');
+  list.innerHTML = '';
+  M2_DATA_ARR.forEach(d => {
+    const row = document.getElementById('m2-quiz-row-' + d.idx);
+    const val = parseInt(row.querySelector('[data-kind="order"]').value);
+    const ok = val === d.order;
+    const item = document.createElement('div');
+    item.className = 'result-row';
+    item.style.background = ok ? '#ecfdf5' : '#fef2f2';
+    item.style.borderColor = ok ? '#10b981' : '#ef4444';
+    item.innerHTML = `
+      <span class="r-name">${d.label} (${d.temp}℃)</span>
+      <span class="r-detail">예측 ${isNaN(val) ? '-' : val + '번째'} · 실제 ${d.order}번째</span>
+      <span class="r-mark" style="color:${ok ? '#047857' : '#b91c1c'};">${ok ? 'O' : 'X'}</span>
+    `;
+    list.appendChild(item);
+  });
+  const title = document.getElementById('m2-result-title');
+  const sub = document.getElementById('m2-result-sub');
+  if (allCorrect) {
+    title.textContent = '🎉 예측 성공!';
+    sub.textContent = '세 조건의 반응 순서를 모두 맞혔습니다.';
+    sub.style.color = '#047857';
+  } else {
+    title.textContent = '예측 결과 확인';
+    sub.textContent = '온도가 높을수록 반응이 빨라집니다.';
+    sub.style.color = '#b91c1c';
+  }
+  document.getElementById('m2-result-modal').style.display = 'flex';
+}
+document.getElementById('m2-result-close').addEventListener('click', () => {
+  document.getElementById('m2-result-modal').style.display = 'none';
+});
+document.querySelector('#m2-result-modal .result-modal-backdrop').addEventListener('click', () => {
+  document.getElementById('m2-result-modal').style.display = 'none';
+});
 
 document.querySelectorAll('.m2-opt').forEach(btn => {
   btn.addEventListener('click', () => {
@@ -2387,6 +2483,7 @@ document.getElementById('m2-reset').addEventListener('click', () => {
   Object.keys(m2Results).forEach(k => delete m2Results[k]);
   renderM2Chart();
   document.getElementById('m2-next-wrap').style.display = 'none';
+  document.getElementById('m2-result-modal').style.display = 'none';
   document.getElementById('m2-analysis-view').style.display = 'none';
   document.getElementById('m2-main-view').style.display = 'block';
 });
